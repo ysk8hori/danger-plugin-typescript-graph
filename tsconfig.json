@@ -1,23 +1,17 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
-        "rootDir": "src",
-        "outDir": "dist",
-        "allowJs": false,
-        "pretty": true,
-        "strictNullChecks": true,
-        "declaration": true
-    },
-    "lib":["es2017"],
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "dangerfile.ts"
-    ],
-    "exclude": [
-        "dangerfile.ts",
-        "node_modules",
-        "dist"
-    ]
+  "compilerOptions": {
+    "target": "es6",
+    "lib": [
+      "ESNext"
+    ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
+    "module": "commonjs",
+    "rootDir": "src",
+    "outDir": "dist",
+    "allowJs": false,
+    "pretty": true,
+    "strictNullChecks": true,
+    "declaration": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "dangerfile.ts"],
+  "exclude": ["dangerfile.ts", "node_modules", "dist"]
 }
