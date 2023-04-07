@@ -21,6 +21,11 @@ describe('typescriptGraph()', () => {
   it('Checks for a that message has been called', () => {
     global.danger = {
       github: { pr: { title: 'My Test Title' } },
+      git: {
+        modified_files: [],
+        created_files: [],
+        deleted_files: [],
+      },
     };
 
     typescriptGraph();
