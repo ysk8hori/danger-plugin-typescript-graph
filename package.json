@@ -32,7 +32,8 @@
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "prettier": "prettier --write ./src",
     "lint:fix": "eslint --fix src",
-    "lint": "eslint \"src/**/*.ts\""
+    "lint": "eslint \"src/**/*.ts\"",
+    "prepublishOnly": "npm run build"
   },
   "license": "MIT",
   "engines": {
@@ -88,6 +89,6 @@
     ]
   },
   "dependencies": {
-    "@ysk8hori/typescript-graph": "^0.7.3-0"
+    "@ysk8hori/typescript-graph": "^0.7.3"
   }
 }
