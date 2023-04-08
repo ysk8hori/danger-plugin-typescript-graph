@@ -1,20 +1,17 @@
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 import {
   Graph,
-  Meta,
   isSameRelation,
 } from '@ysk8hori/typescript-graph/dist/src/models';
 import { DangerDSLType } from '../node_modules/danger/distribution/dsl/DangerDSL';
 import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
-import { createGraph } from '@ysk8hori/typescript-graph/dist/src/graph/createGraph';
 import { abstraction } from '@ysk8hori/typescript-graph/dist/src/graph/abstraction';
-import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGraph';
 import { mergeGraph } from '@ysk8hori/typescript-graph/dist/src/graph/utils';
-import { execSync } from 'child_process';
 import path = require('path');
 import addStatus from './addStatus';
 import getRenameFiles from './getRenameFiles';
 import getFullGraph from './getFullGraph';
+import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 declare let danger: DangerDSLType;
 export declare function message(message: string): void;
 export declare function warn(message: string): void;
@@ -49,6 +46,8 @@ async function makeGraph() {
     getRenameFiles(),
     getFullGraph(),
   ]);
+
+  // head のグラフが空の場合は何もしない
   if (headGraph.nodes.length === 0) return;
 
   const hasRenamed = headGraph.nodes.some(headNode =>
@@ -166,35 +165,6 @@ ${headLines.join('\n')}
 
   `);
   }
-}
-
-/** （本PRで）変更のあったファイルのパスから、抽象化してはいけないディレクトリのリストを作成する */
-function extractNoAbstractionDirs(filePaths: string[]) {
-  return (
-    filePaths
-      .map(file => {
-        const array = file.split('/');
-        if (array.includes('node_modules')) {
-          // node_modules より深いディレクトリ階層の情報は捨てる
-          // node_modules 内の node の name はパッケージ名のようなものになっているのでそれで良い
-          return 'node_modules';
-        } else if (array.length === 1) {
-          // トップレベルのファイルの場合
-          return undefined;
-        } else {
-          // 末尾のファイル名は不要
-          return path.join(...array.slice(0, array.length - 1));
-        }
-      })
-      .filter(Boolean)
-      .sort()
-      // noAbstractionDirs の重複を除去する
-      .reduce<string[]>((prev, current) => {
-        if (!current) return prev;
-        if (!prev.includes(current)) prev.push(current);
-        return prev;
-      }, [])
-  );
 }
 
 /** グラフと、抽象化してはいけないファイルのパスから、抽象化して良いディレクトリのパスを取得する */
