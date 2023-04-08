@@ -6,7 +6,7 @@ import {
   Meta,
   isSameRelation,
 } from '@ysk8hori/typescript-graph/dist/src/models';
-import addStatus from './addStatus';
+import addStatus from './addStatusFoo';
 import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
