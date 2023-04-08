@@ -1,14 +1,8 @@
-import { isSameRelation } from '@ysk8hori/typescript-graph/dist/src/models';
 import { DangerDSLType } from '../node_modules/danger/distribution/dsl/DangerDSL';
-import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
-import { abstraction } from '@ysk8hori/typescript-graph/dist/src/graph/abstraction';
-import { mergeGraph } from '@ysk8hori/typescript-graph/dist/src/graph/utils';
-import addStatus from './addStatus';
 import getRenameFiles from './getRenameFiles';
 import getFullGraph from './getFullGraph';
-import extractNoAbstractionDirs from './extractNoAbstractionDirs';
-import extractAbstractionTarget from './extractAbstractionTarget';
 import output2Graphs from './output2Graphs';
+import outputGraph from './outputGraph';
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 declare let danger: DangerDSLType;
 export declare function message(message: string): void;
@@ -56,50 +50,6 @@ async function makeGraph() {
     // ファイルの削除またはリネームがある場合は Graph を2つ表示する
     output2Graphs(baseGraph, headGraph, meta, renamed);
   } else {
-    // 削除された Relation にマークをつける
-    headGraph.relations.forEach(current => {
-      for (const baseRelation of baseGraph.relations) {
-        if (
-          !isSameRelation(baseRelation, current) &&
-          baseRelation.kind === 'depends_on'
-        ) {
-          baseRelation.changeStatus = 'deleted';
-        }
-      }
-    });
-    // base と head のグラフをマージする
-    let tmpGraph = mergeGraph(headGraph, baseGraph);
-
-    tmpGraph = abstraction(
-      extractAbstractionTarget(
-        tmpGraph,
-        extractNoAbstractionDirs(
-          [
-            created,
-            deleted,
-            modified,
-            (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-              []) as string[],
-          ].flat(),
-        ),
-      ),
-      tmpGraph,
-    );
-    tmpGraph = addStatus({ modified, created, deleted: [] }, tmpGraph);
-
-    const mermaidLines: string[] = [];
-    mermaidify((arg: string) => mermaidLines.push(arg), tmpGraph, {
-      rootDir: meta.rootDir,
-      LR: true,
-    });
-
-    markdown(`
-  # TypeScript Graph - Diff
-
-  \`\`\`mermaid
-  ${mermaidLines.join('\n')}
-  \`\`\`
-
-  `);
+    outputGraph(baseGraph, headGraph, meta, renamed);
   }
 }
