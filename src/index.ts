@@ -1,17 +1,14 @@
-// Provides dev-time type structures for  `danger` - doesn't affect runtime.
-import {
-  Graph,
-  isSameRelation,
-} from '@ysk8hori/typescript-graph/dist/src/models';
+import { isSameRelation } from '@ysk8hori/typescript-graph/dist/src/models';
 import { DangerDSLType } from '../node_modules/danger/distribution/dsl/DangerDSL';
 import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
 import { abstraction } from '@ysk8hori/typescript-graph/dist/src/graph/abstraction';
 import { mergeGraph } from '@ysk8hori/typescript-graph/dist/src/graph/utils';
-import path = require('path');
 import addStatus from './addStatus';
 import getRenameFiles from './getRenameFiles';
 import getFullGraph from './getFullGraph';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
+import extractAbstractionTarget from './extractAbstractionTarget';
+// Provides dev-time type structures for  `danger` - doesn't affect runtime.
 declare let danger: DangerDSLType;
 export declare function message(message: string): void;
 export declare function warn(message: string): void;
@@ -165,24 +162,4 @@ ${headLines.join('\n')}
 
   `);
   }
-}
-
-/** グラフと、抽象化してはいけないファイルのパスから、抽象化して良いディレクトリのパスを取得する */
-function extractAbstractionTarget(
-  fullGraph: Graph,
-  noAbstractionDirs: string[],
-): string[] {
-  return (
-    fullGraph.nodes
-      .map(node => path.dirname(node.path))
-      .filter(path => path !== '.' && !path.includes('node_modules'))
-      .filter(path => noAbstractionDirs.every(dir => dir !== path))
-      .sort()
-      // 重複を除去する
-      .reduce<string[]>((prev, current) => {
-        if (!current) return prev;
-        if (!prev.includes(current)) prev.push(current);
-        return prev;
-      }, [])
-  );
 }
