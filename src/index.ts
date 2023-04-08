@@ -14,6 +14,7 @@ import { execSync } from 'child_process';
 import path = require('path');
 import addStatus from './addStatus';
 import getRenameFiles from './getRenameFiles';
+import getFullGraph from './getFullGraph';
 declare let danger: DangerDSLType;
 export declare function message(message: string): void;
 export declare function warn(message: string): void;
@@ -40,35 +41,9 @@ async function makeGraph() {
     return;
   }
 
-  const graphPromise = new Promise<{
-    headGraph: Graph;
-    baseGraph: Graph;
-    meta: Meta;
-  }>(resolve => {
-    // head の Graph を生成
-    const { graph: fullHeadGraph, meta } = createGraph(path.resolve('./'));
-    // head には deleted 対象はない
-    const headGraph = filterGraph(
-      [modified, created].flat(),
-      ['node_modules'],
-      fullHeadGraph,
-    );
-
-    execSync(`git fetch origin ${danger.github.pr.base.ref}`);
-    execSync(`git checkout ${danger.github.pr.base.ref}`);
-    // base の Graph を生成
-    const { graph: fullBaseGraph } = createGraph(path.resolve('./'));
-    const baseGraph = filterGraph(
-      [modified, created, deleted].flat(),
-      ['node_modules'],
-      fullBaseGraph,
-    );
-    resolve({ headGraph, baseGraph, meta });
-  });
-
   const [renamed, { headGraph, baseGraph, meta }] = await Promise.all([
     getRenameFiles(),
-    graphPromise,
+    getFullGraph(),
   ]);
   if (headGraph.nodes.length === 0) return;
 
