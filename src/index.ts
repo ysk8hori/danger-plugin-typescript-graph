@@ -23,42 +23,27 @@ export declare function markdown(message: string): void;
  * Visualize the dependencies between files in the TypeScript code base.
  */
 export default function typescriptGraph() {
-  // Replace this with the code from your Dangerfile
-  const title = danger.github.pr.title;
-  message(`PR Title: ${title}`);
-
   makeGraph();
 }
 
 async function makeGraph() {
-  // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
-  if (
-    ![
-      // 以下の *_files は src/index.ts のようなパス文字列になっている
-      danger.git.modified_files,
-      danger.git.created_files,
-      danger.git.deleted_files,
-    ]
-      .flat()
-      .some(file => /\.ts|\.tsx/.test(file))
-  ) {
-    return;
-  }
-
+  // 以下の *_files は src/index.ts のようなパス文字列になっている
   const modified = danger.git.modified_files;
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
 
-  const baseBranch = danger.github.pr.base.ref; // ベースブランチ名
-  const featureBranch = danger.github.pr.head.ref; // フィーチャーブランチ名
-  const repoOwner = danger.github.pr.base.repo.owner.login;
-  const repoName = danger.github.pr.base.repo.name;
+  // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
+  if (
+    ![modified, created, deleted].flat().some(file => /\.ts|\.tsx/.test(file))
+  ) {
+    return;
+  }
 
   const renamePromise = danger.github.api.repos
     .compareCommitsWithBasehead({
-      owner: repoOwner,
-      repo: repoName,
-      basehead: `${baseBranch}...${featureBranch}`,
+      owner: danger.github.pr.base.repo.owner.login,
+      repo: danger.github.pr.base.repo.name,
+      basehead: `${danger.github.pr.base.ref}...${danger.github.pr.head.ref}`,
     })
     .then(comparison =>
       comparison.data.files?.filter(file => file.status === 'renamed'),
@@ -78,9 +63,9 @@ async function makeGraph() {
       fullHeadGraph,
     );
 
+    execSync(`git fetch origin ${danger.github.pr.base.ref}`);
+    execSync(`git checkout ${danger.github.pr.base.ref}`);
     // base の Graph を生成
-    execSync(`git fetch origin ${baseBranch}`);
-    execSync(`git checkout ${baseBranch}`);
     const { graph: fullBaseGraph } = createGraph(path.resolve('./'));
     const baseGraph = filterGraph(
       [modified, created, deleted].flat(),
@@ -99,6 +84,7 @@ async function makeGraph() {
   const hasRenamed = headGraph.nodes.some(headNode =>
     renamed?.map(({ filename }) => filename).includes(headNode.path),
   );
+
   if (deleted.length !== 0 || hasRenamed) {
     // ファイルの削除またはリネームがある場合は Graph を2つ表示する
     let tmpBaseGraph = abstraction(
