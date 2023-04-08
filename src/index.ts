@@ -25,6 +25,10 @@ export declare function markdown(message: string): void;
  * Visualize the dependencies between files in the TypeScript code base.
  */
 export default function typescriptGraph() {
+  // Replace this with the code from your Dangerfile
+  const title = danger.github.pr.title;
+  message(`PR Title: ${title}`);
+
   makeGraph();
 }
 
