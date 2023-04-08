@@ -13,6 +13,7 @@ import { mergeGraph } from '@ysk8hori/typescript-graph/dist/src/graph/utils';
 import { execSync } from 'child_process';
 import path = require('path');
 import addStatus from './addStatus';
+import getRenameFiles from './getRenameFiles';
 declare let danger: DangerDSLType;
 export declare function message(message: string): void;
 export declare function warn(message: string): void;
@@ -38,16 +39,6 @@ async function makeGraph() {
   ) {
     return;
   }
-
-  const renamePromise = danger.github.api.repos
-    .compareCommitsWithBasehead({
-      owner: danger.github.pr.base.repo.owner.login,
-      repo: danger.github.pr.base.repo.name,
-      basehead: `${danger.github.pr.base.ref}...${danger.github.pr.head.ref}`,
-    })
-    .then(comparison =>
-      comparison.data.files?.filter(file => file.status === 'renamed'),
-    );
 
   const graphPromise = new Promise<{
     headGraph: Graph;
@@ -76,7 +67,7 @@ async function makeGraph() {
   });
 
   const [renamed, { headGraph, baseGraph, meta }] = await Promise.all([
-    renamePromise,
+    getRenameFiles(),
     graphPromise,
   ]);
   if (headGraph.nodes.length === 0) return;
