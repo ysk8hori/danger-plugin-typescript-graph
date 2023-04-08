@@ -8,6 +8,7 @@ import getRenameFiles from './getRenameFiles';
 import getFullGraph from './getFullGraph';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import extractAbstractionTarget from './extractAbstractionTarget';
+import output2Graphs from './output2Graphs';
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 declare let danger: DangerDSLType;
 export declare function message(message: string): void;
@@ -53,68 +54,7 @@ async function makeGraph() {
 
   if (deleted.length !== 0 || hasRenamed) {
     // ファイルの削除またはリネームがある場合は Graph を2つ表示する
-    let tmpBaseGraph = abstraction(
-      extractAbstractionTarget(
-        baseGraph,
-        extractNoAbstractionDirs(
-          [
-            created,
-            deleted,
-            modified,
-            (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-              []) as string[],
-          ].flat(),
-        ),
-      ),
-      baseGraph,
-    );
-    tmpBaseGraph = addStatus({ modified, created, deleted }, tmpBaseGraph);
-    // base の書き出し
-    const baseLines: string[] = [];
-    await mermaidify((arg: string) => baseLines.push(arg), tmpBaseGraph, {
-      rootDir: meta.rootDir,
-      LR: true,
-    });
-
-    let tmpHeadGraph = abstraction(
-      extractAbstractionTarget(
-        headGraph,
-        extractNoAbstractionDirs(
-          [
-            created,
-            deleted,
-            modified,
-            (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-              []) as string[],
-          ].flat(),
-        ),
-      ),
-      headGraph,
-    );
-    tmpHeadGraph = addStatus({ modified, created, deleted }, tmpHeadGraph);
-    // head の書き出し
-    const headLines: string[] = [];
-    await mermaidify((arg: string) => headLines.push(arg), tmpHeadGraph, {
-      rootDir: meta.rootDir,
-      LR: true,
-    });
-
-    markdown(`
-# TypeScript Graph - Diff
-
-## Base Branch
-
-\`\`\`mermaid
-${baseLines.join('\n')}
-\`\`\`
-
-## Head Branch
-
-\`\`\`mermaid
-${headLines.join('\n')}
-\`\`\`
-
-`);
+    output2Graphs(baseGraph, headGraph, meta, renamed);
   } else {
     // 削除された Relation にマークをつける
     headGraph.relations.forEach(current => {
