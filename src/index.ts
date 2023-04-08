@@ -1,6 +1,5 @@
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 import {
-  ChangeStatus,
   Graph,
   Meta,
   isSameRelation,
@@ -13,6 +12,7 @@ import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGra
 import { mergeGraph } from '@ysk8hori/typescript-graph/dist/src/graph/utils';
 import { execSync } from 'child_process';
 import path = require('path');
+import addStatus from './addStatus';
 declare let danger: DangerDSLType;
 export declare function message(message: string): void;
 export declare function warn(message: string): void;
@@ -259,35 +259,4 @@ function extractAbstractionTarget(
         return prev;
       }, [])
   );
-}
-
-function addStatus(
-  {
-    modified,
-    created,
-    deleted,
-  }: {
-    modified: string[];
-    created: string[];
-    deleted: string[];
-  },
-  graph: Graph,
-): Graph {
-  const { nodes, relations } = graph;
-  const newNodes = nodes.map(node => {
-    const changeStatus: ChangeStatus = (function () {
-      if (deleted.includes(node.path)) return 'deleted';
-      if (created.includes(node.path)) return 'created';
-      if (modified.includes(node.path)) return 'modified';
-      return 'not_modified';
-    })();
-    return {
-      ...node,
-      changeStatus,
-    };
-  });
-  return {
-    nodes: newNodes,
-    relations,
-  };
 }
