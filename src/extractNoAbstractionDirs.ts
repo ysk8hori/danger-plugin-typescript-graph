@@ -26,5 +26,17 @@ export default function extractNoAbstractionDirs(filePaths: string[]) {
         if (!prev.includes(current)) prev.push(current);
         return prev;
       }, [])
+      .map(dir => {
+        const directoryPaths: string[] = [];
+        let currentPath = dir;
+        while (currentPath !== path.dirname(currentPath)) {
+          directoryPaths.unshift(currentPath);
+          currentPath = path.dirname(currentPath);
+        }
+        directoryPaths.unshift(currentPath);
+        return directoryPaths;
+      })
+      .flat()
+      .filter(dir => dir !== '.')
   );
 }
