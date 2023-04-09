@@ -74,7 +74,7 @@ export function outputGraph(
 # TypeScript Graph - Diff
 
 \`\`\`mermaid
-${mermaidLines.join('\n')}
+${mermaidLines.join('')}
 \`\`\`
 
 `);
@@ -147,13 +147,13 @@ export async function output2Graphs(
 ## Base Branch
 
 \`\`\`mermaid
-${baseLines.join('\n')}
+${baseLines.join('')}
 \`\`\`
 
 ## Head Branch
 
 \`\`\`mermaid
-${headLines.join('\n')}
+${headLines.join('')}
 \`\`\`
 
 `);
