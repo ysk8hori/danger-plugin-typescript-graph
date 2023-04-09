@@ -2,6 +2,7 @@ import { DangerDSLType } from '../node_modules/danger/distribution/dsl/DangerDSL
 import getRenameFiles from './getRenameFiles';
 import getFullGraph from './getFullGraph';
 import { outputGraph, output2Graphs } from './outputGraph';
+import { log } from './log';
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 declare let danger: DangerDSLType;
 export declare function message(message: string): void;
@@ -23,8 +24,11 @@ export default function typescriptGraph() {
 async function makeGraph() {
   // 以下の *_files は src/index.ts のようなパス文字列になっている
   const modified = danger.git.modified_files;
+  log('modified:', modified);
   const created = danger.git.created_files;
+  log('created:', created);
   const deleted = danger.git.deleted_files;
+  log('deleted:', deleted);
 
   // .tsファイルの変更がある場合のみ Graph を生成する。コンパイル対象外の ts ファイルもあるかもしれないがわからないので気にしない
   if (
@@ -37,6 +41,10 @@ async function makeGraph() {
     getRenameFiles(),
     getFullGraph(),
   ]);
+  log('renamed.length:', renamed?.length);
+  log('headGraph.nodes.length:', headGraph.nodes.length);
+  log('baseGraph.nodes.length:', baseGraph.nodes.length);
+  log('meta:', meta);
 
   // head のグラフが空の場合は何もしない
   if (headGraph.nodes.length === 0) return;
