@@ -10,6 +10,7 @@ import addStatus from './addStatus';
 import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
+import { log } from './log';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
 
@@ -39,11 +40,12 @@ export function outputGraph(
     }
   });
   // base と head のグラフをマージする
-  let tmpGraph = mergeGraph(headGraph, baseGraph);
+  const mergedGraph = mergeGraph(headGraph, baseGraph);
+  log('mergedGraph:', mergedGraph);
 
-  tmpGraph = abstraction(
+  const abstractedGraph = abstraction(
     extractAbstractionTarget(
-      tmpGraph,
+      mergedGraph,
       extractNoAbstractionDirs(
         [
           created,
@@ -54,15 +56,19 @@ export function outputGraph(
         ].flat(),
       ),
     ),
-    tmpGraph,
+    mergedGraph,
   );
-  tmpGraph = addStatus({ modified, created, deleted: [] }, tmpGraph);
+  log('abstractedGraph:', abstractedGraph);
+
+  const graph = addStatus({ modified, created, deleted: [] }, abstractedGraph);
+  log('graph:', graph);
 
   const mermaidLines: string[] = [];
-  mermaidify((arg: string) => mermaidLines.push(arg), tmpGraph, {
+  mermaidify((arg: string) => mermaidLines.push(arg), graph, {
     rootDir: meta.rootDir,
     LR: true,
   });
+  log('mermaidLines:', mermaidLines);
 
   markdown(`
 # TypeScript Graph - Diff
