@@ -11,6 +11,7 @@ import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from './log';
+import getMaxSize from './getMaxSize';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
 
@@ -63,6 +64,20 @@ export function outputGraph(
   const graph = addStatus({ modified, created, deleted: [] }, abstractedGraph);
   log('graph:', graph);
 
+  // グラフが大きすぎる場合は表示しない
+  if (graph.nodes.length > getMaxSize()) {
+    markdown(`
+# TypeScript Graph - Diff
+
+> 表示ノード数が多いため、グラフを表示しません。
+> グラフを表示したい場合、環境変数 TSG_MAX_SIZE を設定してください。
+>
+> 本PRでの表示ノード数: ${graph.nodes.length}
+> 最大表示ノード数: ${getMaxSize()}
+`);
+    return;
+  }
+
   const mermaidLines: string[] = [];
   mermaidify((arg: string) => mermaidLines.push(arg), graph, {
     rootDir: meta.rootDir,
@@ -111,12 +126,6 @@ export async function output2Graphs(
     baseGraph,
   );
   tmpBaseGraph = addStatus({ modified, created, deleted }, tmpBaseGraph);
-  // base の書き出し
-  const baseLines: string[] = [];
-  await mermaidify((arg: string) => baseLines.push(arg), tmpBaseGraph, {
-    rootDir: meta.rootDir,
-    LR: true,
-  });
 
   let tmpHeadGraph = abstraction(
     extractAbstractionTarget(
@@ -134,6 +143,31 @@ export async function output2Graphs(
     headGraph,
   );
   tmpHeadGraph = addStatus({ modified, created, deleted }, tmpHeadGraph);
+
+  // base または head のグラフが大きすぎる場合は表示しない
+  if (
+    tmpBaseGraph.nodes.length > getMaxSize() ||
+    tmpHeadGraph.nodes.length > getMaxSize()
+  ) {
+    markdown(`
+# TypeScript Graph - Diff
+
+> 表示ノード数が多いため、グラフを表示しません。
+> グラフを表示したい場合、環境変数 TSG_MAX_SIZE を設定してください。
+>
+> Base branch の表示ノード数: ${tmpBaseGraph.nodes.length}
+> Head branch の表示ノード数: ${tmpHeadGraph.nodes.length}
+> 最大表示ノード数: ${getMaxSize()}
+`);
+  }
+
+  // base の書き出し
+  const baseLines: string[] = [];
+  await mermaidify((arg: string) => baseLines.push(arg), tmpBaseGraph, {
+    rootDir: meta.rootDir,
+    LR: true,
+  });
+
   // head の書き出し
   const headLines: string[] = [];
   await mermaidify((arg: string) => headLines.push(arg), tmpHeadGraph, {
