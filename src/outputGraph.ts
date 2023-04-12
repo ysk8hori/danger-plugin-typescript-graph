@@ -159,6 +159,7 @@ export async function output2Graphs(
 > Head branch の表示ノード数: ${tmpHeadGraph.nodes.length}
 > 最大表示ノード数: ${getMaxSize()}
 `);
+    return;
   }
 
   // base の書き出し
