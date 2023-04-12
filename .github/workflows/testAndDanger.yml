@@ -42,3 +42,4 @@ jobs:
         env:
           DANGER_GITHUB_API_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
           DEBUG: true
+          TSG_MAX_SIZE: 36
