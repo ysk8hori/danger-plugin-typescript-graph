@@ -89,7 +89,7 @@
     ]
   },
   "dependencies": {
-    "@ysk8hori/typescript-graph": "^0.7.4"
+    "@ysk8hori/typescript-graph": "^0.7.5"
   },
   "release": {
     "branches": [
