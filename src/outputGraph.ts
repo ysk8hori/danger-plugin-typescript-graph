@@ -11,7 +11,7 @@ import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from './log';
-import getMaxSize from './getMaxSize';
+import { getMaxSize } from './config';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
 

@@ -3,9 +3,11 @@ import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGra
 import { Graph, Meta } from '@ysk8hori/typescript-graph/dist/src/models';
 import { execSync } from 'child_process';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
-import path = require('path');
 import { log } from './log';
+import { getTsconfigRoot } from './config';
 declare let danger: DangerDSLType;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path');
 
 /**
  * TypeScript Graph の createGraph を使い head と base の Graph を生成する
@@ -21,7 +23,9 @@ export default function getFullGraph() {
     meta: Meta;
   }>(resolve => {
     // head の Graph を生成
-    const { graph: fullHeadGraph, meta } = createGraph(path.resolve('./'));
+    const { graph: fullHeadGraph, meta } = createGraph(
+      path.resolve(getTsconfigRoot()),
+    );
     log('fullHeadGraph.nodes.length:', fullHeadGraph.nodes.length);
     log('fullHeadGraph.relations.length:', fullHeadGraph.relations.length);
     // head には deleted 対象はない
@@ -35,7 +39,9 @@ export default function getFullGraph() {
     execSync(`git fetch origin ${danger.github.pr.base.ref}`);
     execSync(`git checkout ${danger.github.pr.base.ref}`);
     // base の Graph を生成
-    const { graph: fullBaseGraph } = createGraph(path.resolve('./'));
+    const { graph: fullBaseGraph } = createGraph(
+      path.resolve(getTsconfigRoot()),
+    );
     log('fullBaseGraph.nodes.length:', fullBaseGraph.nodes.length);
     log('fullBaseGraph.relations.length:', fullBaseGraph.relations.length);
     const baseGraph = filterGraph(
