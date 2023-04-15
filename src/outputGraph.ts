@@ -4,6 +4,8 @@ import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
 import {
   Graph,
   Meta,
+  Relation,
+  RelationOfDependsOn,
   isSameRelation,
 } from '@ysk8hori/typescript-graph/dist/src/models';
 import addStatus from './addStatus';
@@ -12,9 +14,15 @@ import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from './log';
 import { getMaxSize } from './config';
-import { createPipe, pipe } from 'remeda';
+import { filter, forEach, pipe, set } from 'remeda';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
+
+function isRelationOfDependsOn(
+  relation: Relation,
+): relation is RelationOfDependsOn {
+  return relation.kind === 'depends_on';
+}
 
 export function outputGraph(
   baseGraph: Graph,
@@ -31,16 +39,18 @@ export function outputGraph(
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
   // 削除された Relation にマークをつける
-  headGraph.relations.forEach(current => {
-    for (const baseRelation of baseGraph.relations) {
-      if (
-        !isSameRelation(baseRelation, current) &&
-        baseRelation.kind === 'depends_on'
-      ) {
-        baseRelation.changeStatus = 'deleted';
-      }
-    }
-  });
+  pipe(
+    baseGraph.relations,
+    filter(isRelationOfDependsOn),
+    filter(
+      (baseRelation: RelationOfDependsOn) =>
+        !headGraph.relations.some(headRelation =>
+          isSameRelation(baseRelation, headRelation),
+        ),
+    ),
+    forEach(relation => set(relation, 'changeStatus', 'deleted')),
+  );
+
   // base と head のグラフをマージする
   const mergedGraph = mergeGraph(headGraph, baseGraph);
   log('mergedGraph:', mergedGraph);
