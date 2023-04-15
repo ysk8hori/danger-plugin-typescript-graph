@@ -1,10 +1,10 @@
 import { Graph } from '@ysk8hori/typescript-graph/dist/src/models';
-import path = require('path');
+import path from 'path';
 
 /** グラフと、抽象化してはいけないファイルのパスから、抽象化して良いディレクトリのパスを取得する */
 export default function extractAbstractionTarget(
-  fullGraph: Graph,
   noAbstractionDirs: string[],
+  fullGraph: Graph,
 ): string[] {
   return (
     fullGraph.nodes

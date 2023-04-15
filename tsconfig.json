@@ -5,6 +5,7 @@
       "ESNext"
     ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
     "module": "commonjs",
+    "esModuleInterop": true,
     "rootDir": "src",
     "outDir": "dist",
     "allowJs": false,

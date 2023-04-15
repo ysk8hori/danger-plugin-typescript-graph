@@ -5,9 +5,8 @@ import { execSync } from 'child_process';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from './log';
 import { getTsconfigRoot } from './config';
+import path from 'path';
 declare let danger: DangerDSLType;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require('path');
 
 /**
  * TypeScript Graph の createGraph を使い head と base の Graph を生成する
