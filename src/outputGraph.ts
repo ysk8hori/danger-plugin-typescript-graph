@@ -12,6 +12,7 @@ import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from './log';
 import { getMaxSize } from './config';
+import { createPipe, pipe } from 'remeda';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
 
@@ -44,20 +45,18 @@ export function outputGraph(
   const mergedGraph = mergeGraph(headGraph, baseGraph);
   log('mergedGraph:', mergedGraph);
 
-  const abstractedGraph = abstraction(
-    extractAbstractionTarget(
-      extractNoAbstractionDirs(
-        [
-          created,
-          deleted,
-          modified,
-          (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-            []) as string[],
-        ].flat(),
-      ),
-      mergedGraph,
+  const abstractedGraph = pipe(
+    extractNoAbstractionDirs(
+      [
+        created,
+        deleted,
+        modified,
+        (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
+          []) as string[],
+      ].flat(),
     ),
-    mergedGraph,
+    dirs => extractAbstractionTarget(dirs, mergedGraph),
+    dirs => abstraction(dirs, mergedGraph),
   );
   log('abstractedGraph:', abstractedGraph);
 
@@ -95,6 +94,9 @@ ${mermaidLines.join('')}
 `);
 }
 
+/**
+ * ファイルの削除またはリネームがある場合は Graph を2つ表示する
+ */
 export async function output2Graphs(
   baseGraph: Graph,
   headGraph: Graph,
@@ -109,40 +111,29 @@ export async function output2Graphs(
   const modified = danger.git.modified_files;
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
-  // ファイルの削除またはリネームがある場合は Graph を2つ表示する
-  let tmpBaseGraph = abstraction(
-    extractAbstractionTarget(
-      extractNoAbstractionDirs(
-        [
-          created,
-          deleted,
-          modified,
-          (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-            []) as string[],
-        ].flat(),
-      ),
-      baseGraph,
-    ),
-    baseGraph,
-  );
-  tmpBaseGraph = addStatus({ modified, created, deleted }, tmpBaseGraph);
 
-  let tmpHeadGraph = abstraction(
-    extractAbstractionTarget(
-      extractNoAbstractionDirs(
-        [
-          created,
-          deleted,
-          modified,
-          (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-            []) as string[],
-        ].flat(),
-      ),
-      headGraph,
-    ),
-    headGraph,
+  const noAbstractionDirs = extractNoAbstractionDirs(
+    [
+      created,
+      deleted,
+      modified,
+      (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
+        []) as string[],
+    ].flat(),
   );
-  tmpHeadGraph = addStatus({ modified, created, deleted }, tmpHeadGraph);
+
+  const tmpBaseGraph = pipe(
+    noAbstractionDirs,
+    dirs => extractAbstractionTarget(dirs, baseGraph),
+    dirs => abstraction(dirs, baseGraph),
+    graph => addStatus({ modified, created, deleted }, graph),
+  );
+  const tmpHeadGraph = pipe(
+    noAbstractionDirs,
+    dirs => extractAbstractionTarget(dirs, headGraph),
+    dirs => abstraction(dirs, headGraph),
+    graph => addStatus({ modified, created, deleted }, graph),
+  );
 
   // base または head のグラフが大きすぎる場合は表示しない
   if (
