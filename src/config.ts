@@ -13,3 +13,13 @@ export function getMaxSize() {
   // 環境変数の TSG_MAX_SIZE を返却する
   return process.env.TSG_MAX_SIZE ? parseInt(process.env.TSG_MAX_SIZE, 10) : 30;
 }
+
+/** グラフの方向を指定したオブジェクトを取得する */
+export function getOrientation() {
+  // 環境変数の TSG_ORIENTATION を返却する
+  return process.env.TSG_ORIENTATION === 'TB'
+    ? { TB: true }
+    : process.env.TSG_ORIENTATION === 'LR'
+    ? { LR: true }
+    : {};
+}

@@ -13,7 +13,7 @@ import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from './log';
-import { getMaxSize } from './config';
+import { getMaxSize, getOrientation } from './config';
 import { filter, forEach, pipe, set } from 'remeda';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
@@ -90,7 +90,7 @@ export function outputGraph(
   const mermaidLines: string[] = [];
   mermaidify((arg: string) => mermaidLines.push(arg), graph, {
     rootDir: meta.rootDir,
-    LR: true,
+    ...getOrientation(),
   });
   log('mermaidLines:', mermaidLines);
 
@@ -167,14 +167,14 @@ export async function output2Graphs(
   const baseLines: string[] = [];
   await mermaidify((arg: string) => baseLines.push(arg), tmpBaseGraph, {
     rootDir: meta.rootDir,
-    LR: true,
+    ...getOrientation(),
   });
 
   // head の書き出し
   const headLines: string[] = [];
   await mermaidify((arg: string) => headLines.push(arg), tmpHeadGraph, {
     rootDir: meta.rootDir,
-    LR: true,
+    ...getOrientation(),
   });
 
   markdown(`
