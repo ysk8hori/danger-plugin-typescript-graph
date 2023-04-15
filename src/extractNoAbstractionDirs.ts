@@ -1,4 +1,4 @@
-import path = require('path');
+import path from 'path';
 
 /** （本PRで）変更のあったファイルのパスから、抽象化してはいけないディレクトリのリストを作成する */
 export default function extractNoAbstractionDirs(filePaths: string[]) {
