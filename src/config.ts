@@ -23,3 +23,4 @@ export function getOrientation() {
     ? { LR: true }
     : {};
 }
+// hoge
