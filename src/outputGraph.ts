@@ -46,7 +46,6 @@ export function outputGraph(
 
   const abstractedGraph = abstraction(
     extractAbstractionTarget(
-      mergedGraph,
       extractNoAbstractionDirs(
         [
           created,
@@ -56,6 +55,7 @@ export function outputGraph(
             []) as string[],
         ].flat(),
       ),
+      mergedGraph,
     ),
     mergedGraph,
   );
@@ -112,7 +112,6 @@ export async function output2Graphs(
   // ファイルの削除またはリネームがある場合は Graph を2つ表示する
   let tmpBaseGraph = abstraction(
     extractAbstractionTarget(
-      baseGraph,
       extractNoAbstractionDirs(
         [
           created,
@@ -122,6 +121,7 @@ export async function output2Graphs(
             []) as string[],
         ].flat(),
       ),
+      baseGraph,
     ),
     baseGraph,
   );
@@ -129,7 +129,6 @@ export async function output2Graphs(
 
   let tmpHeadGraph = abstraction(
     extractAbstractionTarget(
-      headGraph,
       extractNoAbstractionDirs(
         [
           created,
@@ -139,6 +138,7 @@ export async function output2Graphs(
             []) as string[],
         ].flat(),
       ),
+      headGraph,
     ),
     headGraph,
   );

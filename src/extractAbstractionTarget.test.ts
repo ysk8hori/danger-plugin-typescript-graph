@@ -4,6 +4,14 @@ import extractAbstractionTarget from './extractAbstractionTarget';
 it('グラフと、抽象化してはいけないファイルのパスから、抽象化して良いディレクトリのパスを取得する', () => {
   expect(
     extractAbstractionTarget(
+      [
+        '.github',
+        '.github/workflows',
+        'src',
+        'src/components',
+        'src/components/game',
+        'src/components/game/cell',
+      ],
       {
         nodes: [
           {
@@ -155,14 +163,6 @@ it('グラフと、抽象化してはいけないファイルのパスから、�
           },
         ],
       },
-      [
-        '.github',
-        '.github/workflows',
-        'src',
-        'src/components',
-        'src/components/game',
-        'src/components/game/cell',
-      ],
     ),
   ).toEqual(['src/components/game/utils/answers']);
 });
