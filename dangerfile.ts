@@ -17,4 +17,8 @@ if (hasAppChanges && !hasTestChanges) {
   );
 }
 
-typescriptGraph();
+(async () => {
+  console.log('TSG START');
+  await typescriptGraph();
+  console.log('TSG END');
+})();
