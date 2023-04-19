@@ -13,7 +13,7 @@ import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from './log';
-import { getMaxSize, getOrientation } from './config';
+import { getMaxSize, getOrientation, isInDetails } from './config';
 import { filter, forEach, pipe, set } from 'remeda';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
@@ -76,7 +76,7 @@ export function outputGraph(
   // グラフが大きすぎる場合は表示しない
   if (graph.nodes.length > getMaxSize()) {
     markdown(`
-# TypeScript Graph - Diff
+## TypeScript Graph - Diff
 
 > 表示ノード数が多いため、グラフを表示しません。
 > グラフを表示したい場合、環境変数 TSG_MAX_SIZE を設定してください。
@@ -95,12 +95,18 @@ export function outputGraph(
   log('mermaidLines:', mermaidLines);
 
   markdown(`
-# TypeScript Graph - Diff
+## TypeScript Graph - Diff
+
+${outputIfInDetails(`
+<details>
+<summary>mermaid</summary>
+`)}
 
 \`\`\`mermaid
 ${mermaidLines.join('')}
 \`\`\`
 
+${outputIfInDetails('</details>')}
 `);
 }
 
@@ -151,7 +157,7 @@ export async function output2Graphs(
     tmpHeadGraph.nodes.length > getMaxSize()
   ) {
     markdown(`
-# TypeScript Graph - Diff
+## TypeScript Graph - Diff
 
 > 表示ノード数が多いため、グラフを表示しません。
 > グラフを表示したい場合、環境変数 TSG_MAX_SIZE を設定してください。
@@ -178,19 +184,30 @@ export async function output2Graphs(
   });
 
   markdown(`
-# TypeScript Graph - Diff
+## TypeScript Graph - Diff
 
-## Base Branch
+${outputIfInDetails(`
+<details>
+<summary>mermaid</summary>
+`)}
+
+### Base Branch
 
 \`\`\`mermaid
 ${baseLines.join('')}
 \`\`\`
 
-## Head Branch
+### Head Branch
 
 \`\`\`mermaid
 ${headLines.join('')}
 \`\`\`
 
+${outputIfInDetails('</details>')}
 `);
+}
+
+/** isMermaidInDetails() の結果が true ならば与えられた文字列を返し、そうでなければ空文字を返す関数。 */
+function outputIfInDetails(str: string): string {
+  return isInDetails() ? str : '';
 }

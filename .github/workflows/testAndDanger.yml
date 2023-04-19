@@ -41,4 +41,4 @@ jobs:
         run: npx danger ci
         env:
           DANGER_GITHUB_API_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
-          DEBUG: true
+          TSG_DEBUG: true
