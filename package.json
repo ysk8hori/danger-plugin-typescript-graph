@@ -37,7 +37,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=16.0.0"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.4.2",
