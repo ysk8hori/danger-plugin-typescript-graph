@@ -13,12 +13,12 @@ export declare function markdown(message: string): void;
 /**
  * Visualize the dependencies between files in the TypeScript code base.
  */
-export default function typescriptGraph() {
+export default async function typescriptGraph() {
   // Replace this with the code from your Dangerfile
   const title = danger.github.pr.title;
   message(`PR Title: ${title}`);
 
-  makeGraph();
+  await makeGraph();
 }
 
 async function makeGraph() {
@@ -55,8 +55,8 @@ async function makeGraph() {
 
   if (deleted.length !== 0 || hasRenamed) {
     // ファイルの削除またはリネームがある場合は Graph を2つ表示する
-    output2Graphs(baseGraph, headGraph, meta, renamed);
+    await output2Graphs(baseGraph, headGraph, meta, renamed);
   } else {
-    outputGraph(baseGraph, headGraph, meta, renamed);
+    await outputGraph(baseGraph, headGraph, meta, renamed);
   }
 }
