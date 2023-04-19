@@ -27,3 +27,8 @@ export function getOrientation() {
 export function isDebugEnabled() {
   return process.env.TSG_DEBUG;
 }
+
+/** Mermaid を `<details>` タグで囲み折りたたむかどうか */
+export function isInDetails() {
+  return process.env.TSG_IN_DETAILS;
+}

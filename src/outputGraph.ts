@@ -13,7 +13,7 @@ import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from './log';
-import { getMaxSize, getOrientation } from './config';
+import { getMaxSize, getOrientation, isInDetails } from './config';
 import { filter, forEach, pipe, set } from 'remeda';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
@@ -97,10 +97,16 @@ export function outputGraph(
   markdown(`
 ## TypeScript Graph - Diff
 
+${outputIfInDetails(`
+<details>
+<summary>mermaid</summary>
+`)}
+
 \`\`\`mermaid
 ${mermaidLines.join('')}
 \`\`\`
 
+${outputIfInDetails('</details>')}
 `);
 }
 
@@ -180,6 +186,11 @@ export async function output2Graphs(
   markdown(`
 ## TypeScript Graph - Diff
 
+${outputIfInDetails(`
+<details>
+<summary>mermaid</summary>
+`)}
+
 ### Base Branch
 
 \`\`\`mermaid
@@ -192,5 +203,11 @@ ${baseLines.join('')}
 ${headLines.join('')}
 \`\`\`
 
+${outputIfInDetails('</details>')}
 `);
+}
+
+/** isMermaidInDetails() の結果が true ならば与えられた文字列を返し、そうでなければ空文字を返す関数。 */
+function outputIfInDetails(str: string): string {
+  return isInDetails() ? str : '';
 }
