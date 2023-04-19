@@ -144,12 +144,14 @@ export async function output2Graphs(
     dirs => abstraction(dirs, baseGraph),
     graph => addStatus({ modified, created, deleted }, graph),
   );
+  log('tmpBaseGraph(abstracted):', tmpBaseGraph);
   const tmpHeadGraph = pipe(
     noAbstractionDirs,
     dirs => extractAbstractionTarget(dirs, headGraph),
     dirs => abstraction(dirs, headGraph),
     graph => addStatus({ modified, created, deleted }, graph),
   );
+  log('tmpHeadGraph(abstracted):', tmpHeadGraph);
 
   // base または head のグラフが大きすぎる場合は表示しない
   if (
@@ -175,6 +177,7 @@ export async function output2Graphs(
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
+  log('baseLines:', baseLines);
 
   // head の書き出し
   const headLines: string[] = [];
@@ -182,6 +185,7 @@ export async function output2Graphs(
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
+  log('headLines:', headLines);
 
   markdown(`
 ## TypeScript Graph - Diff
