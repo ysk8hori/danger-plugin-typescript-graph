@@ -76,7 +76,7 @@ export function outputGraph(
   // グラフが大きすぎる場合は表示しない
   if (graph.nodes.length > getMaxSize()) {
     markdown(`
-# TypeScript Graph - Diff
+## TypeScript Graph - Diff
 
 > 表示ノード数が多いため、グラフを表示しません。
 > グラフを表示したい場合、環境変数 TSG_MAX_SIZE を設定してください。
@@ -95,7 +95,7 @@ export function outputGraph(
   log('mermaidLines:', mermaidLines);
 
   markdown(`
-# TypeScript Graph - Diff
+## TypeScript Graph - Diff
 
 \`\`\`mermaid
 ${mermaidLines.join('')}
@@ -151,7 +151,7 @@ export async function output2Graphs(
     tmpHeadGraph.nodes.length > getMaxSize()
   ) {
     markdown(`
-# TypeScript Graph - Diff
+## TypeScript Graph - Diff
 
 > 表示ノード数が多いため、グラフを表示しません。
 > グラフを表示したい場合、環境変数 TSG_MAX_SIZE を設定してください。
@@ -178,15 +178,15 @@ export async function output2Graphs(
   });
 
   markdown(`
-# TypeScript Graph - Diff
+## TypeScript Graph - Diff
 
-## Base Branch
+### Base Branch
 
 \`\`\`mermaid
 ${baseLines.join('')}
 \`\`\`
 
-## Head Branch
+### Head Branch
 
 \`\`\`mermaid
 ${headLines.join('')}
