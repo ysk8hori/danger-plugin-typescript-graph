@@ -23,3 +23,7 @@ export function getOrientation() {
     ? { LR: true }
     : {};
 }
+
+export function isDebugEnabled() {
+  return process.env.TSG_DEBUG;
+}
