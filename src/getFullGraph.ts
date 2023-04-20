@@ -35,6 +35,7 @@ export default function getFullGraph() {
     );
     log('headGraph:', headGraph);
 
+    // base の Graph を生成するために base に checkout する
     execSync(`git fetch origin ${danger.github.pr.base.ref}`);
     execSync(`git checkout ${danger.github.pr.base.ref}`);
     // base の Graph を生成
@@ -53,6 +54,9 @@ export default function getFullGraph() {
       fullBaseGraph,
     );
     log('baseGraph:', baseGraph);
+    // head に戻す
+    execSync(`git fetch origin ${danger.github.pr.head.ref}`);
+    execSync(`git checkout ${danger.github.pr.head.ref}`);
     resolve({ headGraph, baseGraph, meta });
   });
 }
