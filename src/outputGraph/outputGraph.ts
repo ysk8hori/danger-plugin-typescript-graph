@@ -9,8 +9,8 @@ declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
 
 export function outputGraph(
-  baseGraph: Graph,
-  headGraph: Graph,
+  fullBaseGraph: Graph,
+  fullHeadGraph: Graph,
   meta: Meta,
   renamed:
     | {
@@ -24,8 +24,8 @@ export function outputGraph(
   const deleted = danger.git.deleted_files;
   // 削除された Relation にマークをつける
   const graph = createDifferenceGraph(
-    baseGraph,
-    headGraph,
+    fullBaseGraph,
+    fullHeadGraph,
     created,
     deleted,
     modified,
