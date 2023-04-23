@@ -3,7 +3,7 @@ import { Graph, Meta } from '@ysk8hori/typescript-graph/dist/src/models';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from '../utils/log';
 import { getMaxSize, getOrientation, isInDetails } from '../utils/config';
-import createDifferenceGraph from './createDifferenceGraph';
+import mergeGraphsWithDifferences from './mergeGraphsWithDifferences';
 import applyMutualDifferences from './applyMutualDifferences';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
@@ -23,7 +23,7 @@ export function outputGraph(
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
   // 削除された Relation にマークをつける
-  const graph = createDifferenceGraph(
+  const graph = mergeGraphsWithDifferences(
     fullBaseGraph,
     fullHeadGraph,
     created,

@@ -9,7 +9,7 @@ import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import markRelationsAsDeleted from './markRelationsAsDeleted';
 
 /** ２つのグラフからその差分を反映した１つのグラフを生成する */
-export default function createDifferenceGraph(
+export default function mergeGraphsWithDifferences(
   baseGraph: Graph,
   headGraph: Graph,
   created: string[],
