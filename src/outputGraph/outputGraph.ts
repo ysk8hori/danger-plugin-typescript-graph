@@ -1,28 +1,17 @@
 import { abstraction } from '@ysk8hori/typescript-graph/dist/src/graph/abstraction';
 import { mergeGraph } from '@ysk8hori/typescript-graph/dist/src/graph/utils';
 import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
-import {
-  Graph,
-  Meta,
-  Relation,
-  RelationOfDependsOn,
-  isSameRelation,
-} from '@ysk8hori/typescript-graph/dist/src/models';
+import { Graph, Meta } from '@ysk8hori/typescript-graph/dist/src/models';
 import addStatus from './addStatus';
 import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from '../utils/log';
 import { getMaxSize, getOrientation, isInDetails } from '../utils/config';
-import { filter, forEach, pipe, set } from 'remeda';
+import { pipe } from 'remeda';
+import markRelationsAsDeleted from './markRelationsAsDeleted';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
-
-function isRelationOfDependsOn(
-  relation: Relation,
-): relation is RelationOfDependsOn {
-  return relation.kind === 'depends_on';
-}
 
 export function outputGraph(
   baseGraph: Graph,
@@ -39,17 +28,7 @@ export function outputGraph(
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
   // 削除された Relation にマークをつける
-  pipe(
-    baseGraph.relations,
-    filter(isRelationOfDependsOn),
-    filter(
-      (baseRelation: RelationOfDependsOn) =>
-        !headGraph.relations.some(headRelation =>
-          isSameRelation(baseRelation, headRelation),
-        ),
-    ),
-    forEach(relation => set(relation, 'changeStatus', 'deleted')),
-  );
+  markRelationsAsDeleted(baseGraph, headGraph);
 
   // base と head のグラフをマージする
   const mergedGraph = mergeGraph(headGraph, baseGraph);
