@@ -1,5 +1,4 @@
 import { abstraction } from '@ysk8hori/typescript-graph/dist/src/graph/abstraction';
-import { mergeGraph } from '@ysk8hori/typescript-graph/dist/src/graph/utils';
 import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
 import { Graph, Meta } from '@ysk8hori/typescript-graph/dist/src/models';
 import addStatus from './addStatus';
@@ -9,7 +8,7 @@ import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from '../utils/log';
 import { getMaxSize, getOrientation, isInDetails } from '../utils/config';
 import { pipe } from 'remeda';
-import markRelationsAsDeleted from './markRelationsAsDeleted';
+import createDifferenceGraph from './createDifferenceGraph';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
 
@@ -28,28 +27,14 @@ export function outputGraph(
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
   // 削除された Relation にマークをつける
-  markRelationsAsDeleted(baseGraph, headGraph);
-
-  // base と head のグラフをマージする
-  const mergedGraph = mergeGraph(headGraph, baseGraph);
-  log('mergedGraph:', mergedGraph);
-
-  const abstractedGraph = pipe(
-    extractNoAbstractionDirs(
-      [
-        created,
-        deleted,
-        modified,
-        renamed?.map(diff => diff.previous_filename).filter(Boolean) ?? [],
-      ].flat(),
-    ),
-    dirs => extractAbstractionTarget(dirs, mergedGraph),
-    dirs => abstraction(dirs, mergedGraph),
+  const graph = createDifferenceGraph(
+    baseGraph,
+    headGraph,
+    created,
+    deleted,
+    modified,
+    renamed,
   );
-  log('abstractedGraph:', abstractedGraph);
-
-  const graph = addStatus({ modified, created, deleted: [] }, abstractedGraph);
-  log('graph:', graph);
 
   // グラフが大きすぎる場合は表示しない
   if (graph.nodes.length > getMaxSize()) {
