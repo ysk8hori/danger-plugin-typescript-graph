@@ -40,8 +40,7 @@ export function outputGraph(
         created,
         deleted,
         modified,
-        (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-          []) as string[],
+        renamed?.map(diff => diff.previous_filename).filter(Boolean) ?? [],
       ].flat(),
     ),
     dirs => extractAbstractionTarget(dirs, mergedGraph),
@@ -112,8 +111,7 @@ export async function output2Graphs(
       created,
       deleted,
       modified,
-      (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-        []) as string[],
+      renamed?.map(diff => diff.previous_filename).filter(Boolean) ?? [],
     ].flat(),
   );
 
