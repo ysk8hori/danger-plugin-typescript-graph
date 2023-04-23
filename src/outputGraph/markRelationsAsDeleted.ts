@@ -12,11 +12,11 @@ export default function markRelationsAsDeleted(
   headGraph: Graph,
 ) {
   pipe(
-    baseGraph.relations,
+    headGraph.relations,
     filter(isRelationOfDependsOn),
     filter(
-      baseRelation =>
-        !headGraph.relations.some(headRelation =>
+      headRelation =>
+        !baseGraph.relations.some(baseRelation =>
           isSameRelation(baseRelation, headRelation),
         ),
     ),
