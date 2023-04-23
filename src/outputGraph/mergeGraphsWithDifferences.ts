@@ -6,13 +6,13 @@ import { log } from '../utils/log';
 import addStatus from './addStatus';
 import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
-import markRelationsAsDeleted from './markRelationsAsDeleted';
+import updateRelationsStatus from './updateRelationsStatus';
 import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGraph';
 
 /** ２つのグラフからその差分を反映した１つのグラフを生成する */
 export default function mergeGraphsWithDifferences(
-  baseGraph: Graph,
-  headGraph: Graph,
+  fullBaseGraph: Graph,
+  fullHeadGraph: Graph,
   created: string[],
   deleted: string[],
   modified: string[],
@@ -20,10 +20,13 @@ export default function mergeGraphsWithDifferences(
     | { filename: string; previous_filename: string | undefined }[]
     | undefined,
 ) {
-  markRelationsAsDeleted(baseGraph, headGraph);
+  const { createdRelations, deletedRelations } = updateRelationsStatus(
+    fullBaseGraph,
+    fullHeadGraph,
+  );
 
   // base と head のグラフをマージする
-  const mergedGraph = mergeGraph(headGraph, baseGraph);
+  const mergedGraph = mergeGraph(fullHeadGraph, fullBaseGraph);
   log('mergedGraph:', mergedGraph);
 
   const includes = [
@@ -32,6 +35,12 @@ export default function mergeGraphsWithDifferences(
     ...(renamed
       ?.flatMap(diff => [diff.previous_filename, diff.filename])
       .filter(Boolean) ?? []),
+    ...createdRelations
+      .flatMap(relation => [relation.from, relation.to])
+      .map(relation => relation.path),
+    ...deletedRelations
+      .flatMap(relation => [relation.from, relation.to])
+      .map(relation => relation.path),
   ];
 
   const abstractionTarget = pipe(includes, extractNoAbstractionDirs, dirs =>
