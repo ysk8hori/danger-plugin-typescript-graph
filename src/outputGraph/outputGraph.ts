@@ -1,7 +1,6 @@
 import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
 import { Graph, Meta } from '@ysk8hori/typescript-graph/dist/src/models';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
-import { log } from '../utils/log';
 import { getMaxSize, getOrientation, isInDetails } from '../utils/config';
 import mergeGraphsWithDifferences from './mergeGraphsWithDifferences';
 import applyMutualDifferences from './applyMutualDifferences';
@@ -51,7 +50,6 @@ export function outputGraph(
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
-  log('mermaidLines:', mermaidLines);
 
   markdown(`
 ## TypeScript Graph - Diff
@@ -120,7 +118,6 @@ export async function output2Graphs(
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
-  log('baseLines:', baseLines);
 
   // head の書き出し
   const headLines: string[] = [];
@@ -128,7 +125,6 @@ export async function output2Graphs(
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
-  log('headLines:', headLines);
 
   markdown(`
 ## TypeScript Graph - Diff
