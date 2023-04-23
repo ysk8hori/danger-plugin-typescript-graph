@@ -11,8 +11,8 @@ import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGra
 
 /** ２つのグラフからその差分を反映した１つのグラフを生成する */
 export default function mergeGraphsWithDifferences(
-  baseGraph: Graph,
-  headGraph: Graph,
+  fullBaseGraph: Graph,
+  fullHeadGraph: Graph,
   created: string[],
   deleted: string[],
   modified: string[],
@@ -20,10 +20,10 @@ export default function mergeGraphsWithDifferences(
     | { filename: string; previous_filename: string | undefined }[]
     | undefined,
 ) {
-  markRelationsAsDeleted(baseGraph, headGraph);
+  markRelationsAsDeleted(fullBaseGraph, fullHeadGraph);
 
   // base と head のグラフをマージする
-  const mergedGraph = mergeGraph(headGraph, baseGraph);
+  const mergedGraph = mergeGraph(fullHeadGraph, fullBaseGraph);
   log('mergedGraph:', mergedGraph);
 
   const includes = [
