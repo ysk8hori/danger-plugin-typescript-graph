@@ -1,32 +1,16 @@
-import { abstraction } from '@ysk8hori/typescript-graph/dist/src/graph/abstraction';
-import { mergeGraph } from '@ysk8hori/typescript-graph/dist/src/graph/utils';
 import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
-import {
-  Graph,
-  Meta,
-  Relation,
-  RelationOfDependsOn,
-  isSameRelation,
-} from '@ysk8hori/typescript-graph/dist/src/models';
-import addStatus from './addStatus';
-import extractAbstractionTarget from './extractAbstractionTarget';
-import extractNoAbstractionDirs from './extractNoAbstractionDirs';
+import { Graph, Meta } from '@ysk8hori/typescript-graph/dist/src/models';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
-import { log } from './log';
-import { getMaxSize, getOrientation, isInDetails } from './config';
-import { filter, forEach, pipe, set } from 'remeda';
+import { log } from '../utils/log';
+import { getMaxSize, getOrientation, isInDetails } from '../utils/config';
+import mergeGraphsWithDifferences from './mergeGraphsWithDifferences';
+import applyMutualDifferences from './applyMutualDifferences';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
 
-function isRelationOfDependsOn(
-  relation: Relation,
-): relation is RelationOfDependsOn {
-  return relation.kind === 'depends_on';
-}
-
 export function outputGraph(
-  baseGraph: Graph,
-  headGraph: Graph,
+  fullBaseGraph: Graph,
+  fullHeadGraph: Graph,
   meta: Meta,
   renamed:
     | {
@@ -39,39 +23,14 @@ export function outputGraph(
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
   // 削除された Relation にマークをつける
-  pipe(
-    baseGraph.relations,
-    filter(isRelationOfDependsOn),
-    filter(
-      (baseRelation: RelationOfDependsOn) =>
-        !headGraph.relations.some(headRelation =>
-          isSameRelation(baseRelation, headRelation),
-        ),
-    ),
-    forEach(relation => set(relation, 'changeStatus', 'deleted')),
+  const graph = mergeGraphsWithDifferences(
+    fullBaseGraph,
+    fullHeadGraph,
+    created,
+    deleted,
+    modified,
+    renamed,
   );
-
-  // base と head のグラフをマージする
-  const mergedGraph = mergeGraph(headGraph, baseGraph);
-  log('mergedGraph:', mergedGraph);
-
-  const abstractedGraph = pipe(
-    extractNoAbstractionDirs(
-      [
-        created,
-        deleted,
-        modified,
-        (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-          []) as string[],
-      ].flat(),
-    ),
-    dirs => extractAbstractionTarget(dirs, mergedGraph),
-    dirs => abstraction(dirs, mergedGraph),
-  );
-  log('abstractedGraph:', abstractedGraph);
-
-  const graph = addStatus({ modified, created, deleted: [] }, abstractedGraph);
-  log('graph:', graph);
 
   // グラフが大きすぎる場合は表示しない
   if (graph.nodes.length > getMaxSize()) {
@@ -114,8 +73,8 @@ ${outputIfInDetails('</details>')}
  * ファイルの削除またはリネームがある場合は Graph を2つ表示する
  */
 export async function output2Graphs(
-  baseGraph: Graph,
-  headGraph: Graph,
+  fullBaseGraph: Graph,
+  fullHeadGraph: Graph,
   meta: Meta,
   renamed:
     | {
@@ -128,35 +87,19 @@ export async function output2Graphs(
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
 
-  const noAbstractionDirs = extractNoAbstractionDirs(
-    [
-      created,
-      deleted,
-      modified,
-      (renamed?.map(diff => diff.previous_filename).filter(Boolean) ??
-        []) as string[],
-    ].flat(),
+  const { baseGraph, headGraph } = applyMutualDifferences(
+    created,
+    deleted,
+    modified,
+    renamed,
+    fullBaseGraph,
+    fullHeadGraph,
   );
-
-  const tmpBaseGraph = pipe(
-    noAbstractionDirs,
-    dirs => extractAbstractionTarget(dirs, baseGraph),
-    dirs => abstraction(dirs, baseGraph),
-    graph => addStatus({ modified, created, deleted }, graph),
-  );
-  log('tmpBaseGraph(abstracted):', tmpBaseGraph);
-  const tmpHeadGraph = pipe(
-    noAbstractionDirs,
-    dirs => extractAbstractionTarget(dirs, headGraph),
-    dirs => abstraction(dirs, headGraph),
-    graph => addStatus({ modified, created, deleted }, graph),
-  );
-  log('tmpHeadGraph(abstracted):', tmpHeadGraph);
 
   // base または head のグラフが大きすぎる場合は表示しない
   if (
-    tmpBaseGraph.nodes.length > getMaxSize() ||
-    tmpHeadGraph.nodes.length > getMaxSize()
+    baseGraph.nodes.length > getMaxSize() ||
+    headGraph.nodes.length > getMaxSize()
   ) {
     markdown(`
 ## TypeScript Graph - Diff
@@ -164,8 +107,8 @@ export async function output2Graphs(
 > 表示ノード数が多いため、グラフを表示しません。
 > グラフを表示したい場合、環境変数 TSG_MAX_SIZE を設定してください。
 >
-> Base branch の表示ノード数: ${tmpBaseGraph.nodes.length}
-> Head branch の表示ノード数: ${tmpHeadGraph.nodes.length}
+> Base branch の表示ノード数: ${baseGraph.nodes.length}
+> Head branch の表示ノード数: ${headGraph.nodes.length}
 > 最大表示ノード数: ${getMaxSize()}
 `);
     return;
@@ -173,7 +116,7 @@ export async function output2Graphs(
 
   // base の書き出し
   const baseLines: string[] = [];
-  await mermaidify((arg: string) => baseLines.push(arg), tmpBaseGraph, {
+  await mermaidify((arg: string) => baseLines.push(arg), baseGraph, {
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
@@ -181,7 +124,7 @@ export async function output2Graphs(
 
   // head の書き出し
   const headLines: string[] = [];
-  await mermaidify((arg: string) => headLines.push(arg), tmpHeadGraph, {
+  await mermaidify((arg: string) => headLines.push(arg), headGraph, {
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
