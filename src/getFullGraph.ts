@@ -17,8 +17,8 @@ declare let danger: DangerDSLType;
  */
 export default function getFullGraph() {
   return new Promise<{
-    headGraph: Graph;
-    baseGraph: Graph;
+    fullHeadGraph: Graph;
+    fullBaseGraph: Graph;
     meta: Meta;
   }>(resolve => {
     // head の Graph を生成
@@ -27,13 +27,6 @@ export default function getFullGraph() {
     );
     log('fullHeadGraph.nodes.length:', fullHeadGraph.nodes.length);
     log('fullHeadGraph.relations.length:', fullHeadGraph.relations.length);
-    // head には deleted 対象はない
-    const headGraph = filterGraph(
-      [danger.git.modified_files, danger.git.created_files].flat(),
-      ['node_modules'],
-      fullHeadGraph,
-    );
-    log('headGraph:', headGraph);
 
     // base の Graph を生成するために base に checkout する
     execSync(`git fetch origin ${danger.github.pr.base.ref}`);
@@ -44,19 +37,9 @@ export default function getFullGraph() {
     );
     log('fullBaseGraph.nodes.length:', fullBaseGraph.nodes.length);
     log('fullBaseGraph.relations.length:', fullBaseGraph.relations.length);
-    const baseGraph = filterGraph(
-      [
-        danger.git.modified_files,
-        danger.git.created_files,
-        danger.git.deleted_files,
-      ].flat(),
-      ['node_modules'],
-      fullBaseGraph,
-    );
-    log('baseGraph:', baseGraph);
     // head に戻す
     execSync(`git fetch origin ${danger.github.pr.head.ref}`);
     execSync(`git checkout ${danger.github.pr.head.ref}`);
-    resolve({ headGraph, baseGraph, meta });
+    resolve({ fullHeadGraph, fullBaseGraph, meta });
   });
 }
