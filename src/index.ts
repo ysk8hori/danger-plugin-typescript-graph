@@ -37,26 +37,26 @@ async function makeGraph() {
     return;
   }
 
-  const [renamed, { headGraph, baseGraph, meta }] = await Promise.all([
+  const [renamed, { fullHeadGraph, fullBaseGraph, meta }] = await Promise.all([
     getRenameFiles(),
     getFullGraph(),
   ]);
   log('renamed.length:', renamed?.length);
-  log('headGraph.nodes.length:', headGraph.nodes.length);
-  log('baseGraph.nodes.length:', baseGraph.nodes.length);
+  log('fullHeadGraph.nodes.length:', fullHeadGraph.nodes.length);
+  log('fullBaseGraph.nodes.length:', fullBaseGraph.nodes.length);
   log('meta:', meta);
 
   // head のグラフが空の場合は何もしない
-  if (headGraph.nodes.length === 0) return;
+  if (fullHeadGraph.nodes.length === 0) return;
 
-  const hasRenamed = headGraph.nodes.some(headNode =>
+  const hasRenamed = fullHeadGraph.nodes.some(headNode =>
     renamed?.map(({ filename }) => filename).includes(headNode.path),
   );
 
   if (deleted.length !== 0 || hasRenamed) {
     // ファイルの削除またはリネームがある場合は Graph を2つ表示する
-    await output2Graphs(baseGraph, headGraph, meta, renamed);
+    await output2Graphs(fullBaseGraph, fullHeadGraph, meta, renamed);
   } else {
-    await outputGraph(baseGraph, headGraph, meta, renamed);
+    await outputGraph(fullBaseGraph, fullHeadGraph, meta, renamed);
   }
 }

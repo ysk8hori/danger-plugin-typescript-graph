@@ -5,6 +5,7 @@ import { log } from '../utils/log';
 import addStatus from './addStatus';
 import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
+import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGraph';
 
 /**
  * ２つのグラフの差分を互いに反映する。
@@ -21,26 +22,36 @@ export default function applyMutualDifferences(
   fullBaseGraph: Graph,
   fullHeadGraph: Graph,
 ) {
-  const noAbstractionDirs = extractNoAbstractionDirs(
-    [
-      created,
-      deleted,
-      modified,
-      renamed?.map(diff => diff.previous_filename).filter(Boolean) ?? [],
-    ].flat(),
-  );
+  const includes = [
+    ...created,
+    ...modified,
+    ...(renamed
+      ?.flatMap(diff => [diff.previous_filename, diff.filename])
+      .filter(Boolean) ?? []),
+  ];
 
-  const baseGraph = pipe(
-    noAbstractionDirs,
+  const abstractionTargetsForBase = pipe(
+    includes,
+    extractNoAbstractionDirs,
     dirs => extractAbstractionTarget(dirs, fullBaseGraph),
-    dirs => abstraction(dirs, fullBaseGraph),
+  );
+  const baseGraph = pipe(
+    fullBaseGraph,
+    graph => filterGraph(includes, ['node_modules'], graph),
+    graph => abstraction(abstractionTargetsForBase, graph),
     graph => addStatus({ modified, created, deleted }, graph),
   );
   log('baseGraph(abstracted):', baseGraph);
-  const headGraph = pipe(
-    noAbstractionDirs,
+
+  const abstractionTargetsForHead = pipe(
+    includes,
+    extractNoAbstractionDirs,
     dirs => extractAbstractionTarget(dirs, fullHeadGraph),
-    dirs => abstraction(dirs, fullHeadGraph),
+  );
+  const headGraph = pipe(
+    fullHeadGraph,
+    graph => filterGraph(includes, ['node_modules'], graph),
+    graph => abstraction(abstractionTargetsForHead, graph),
     graph => addStatus({ modified, created, deleted }, graph),
   );
   log('headGraph(abstracted):', headGraph);

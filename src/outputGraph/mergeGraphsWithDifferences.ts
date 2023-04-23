@@ -7,6 +7,7 @@ import addStatus from './addStatus';
 import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import markRelationsAsDeleted from './markRelationsAsDeleted';
+import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGraph';
 
 /** ２つのグラフからその差分を反映した１つのグラフを生成する */
 export default function mergeGraphsWithDifferences(
@@ -25,21 +26,26 @@ export default function mergeGraphsWithDifferences(
   const mergedGraph = mergeGraph(headGraph, baseGraph);
   log('mergedGraph:', mergedGraph);
 
-  const abstractedGraph = pipe(
-    extractNoAbstractionDirs(
-      [
-        created,
-        deleted,
-        modified,
-        renamed?.map(diff => diff.previous_filename).filter(Boolean) ?? [],
-      ].flat(),
-    ),
-    dirs => extractAbstractionTarget(dirs, mergedGraph),
-    dirs => abstraction(dirs, mergedGraph),
-  );
-  log('abstractedGraph:', abstractedGraph);
+  const includes = [
+    ...created,
+    ...modified,
+    ...(renamed
+      ?.flatMap(diff => [diff.previous_filename, diff.filename])
+      .filter(Boolean) ?? []),
+  ];
 
-  const graph = addStatus({ modified, created, deleted: [] }, abstractedGraph);
-  log('graph:', graph);
+  const abstractionTarget = pipe(includes, extractNoAbstractionDirs, dirs =>
+    extractAbstractionTarget(dirs, mergedGraph),
+  );
+
+  const graph = pipe(
+    mergedGraph,
+    graph => filterGraph(includes, ['node_modules'], graph),
+    graph => abstraction(abstractionTarget, graph),
+    graph => (log('abstractedGraph:', graph), graph),
+    graph => addStatus({ modified, created, deleted }, graph),
+    graph => (log('graph:', graph), graph),
+  );
+
   return graph;
 }
