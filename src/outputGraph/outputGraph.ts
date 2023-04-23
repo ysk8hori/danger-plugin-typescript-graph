@@ -8,9 +8,9 @@ import {
   RelationOfDependsOn,
   isSameRelation,
 } from '@ysk8hori/typescript-graph/dist/src/models';
-import addStatus from '../addStatus';
-import extractAbstractionTarget from '../extractAbstractionTarget';
-import extractNoAbstractionDirs from '../extractNoAbstractionDirs';
+import addStatus from './addStatus';
+import extractAbstractionTarget from './extractAbstractionTarget';
+import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { log } from '../log';
 import { getMaxSize, getOrientation, isInDetails } from '../config';
