@@ -1,7 +1,7 @@
 import { DangerDSLType } from '../node_modules/danger/distribution/dsl/DangerDSL';
 import getRenameFiles from './getRenameFiles';
 import getFullGraph from './getFullGraph';
-import { outputGraph, output2Graphs } from './outputGraph';
+import { outputGraph, output2Graphs } from './outputGraph/outputGraph';
 import { log } from './log';
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 declare let danger: DangerDSLType;
