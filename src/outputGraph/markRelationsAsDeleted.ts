@@ -5,6 +5,7 @@ import {
   Relation,
 } from '@ysk8hori/typescript-graph/dist/src/models';
 import { pipe, filter, forEach, set } from 'remeda';
+import { log } from '../utils/log';
 
 /** 削除された Relation にマークをつける */
 export default function updateRelationsStatus(
@@ -22,6 +23,7 @@ export default function updateRelationsStatus(
     ),
     forEach(relation => set(relation, 'changeStatus', 'deleted')),
     filter(relation => relation.changeStatus === 'deleted'),
+    relations => (log('deletedRelations:', relations), relations),
   );
   const createdRelations = pipe(
     baseGraph.relations,
@@ -34,6 +36,7 @@ export default function updateRelationsStatus(
     ),
     forEach(relation => set(relation, 'changeStatus', 'created')),
     filter(relation => relation.changeStatus === 'created'),
+    relations => (log('createdRelations:', relations), relations),
   );
   return { deletedRelations, createdRelations };
 }
