@@ -26,6 +26,7 @@
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
     "build": "tsc",
+    "type-check": "tsc --noEmit",
     "test": "jest",
     "predocs": "rm -rf docs/",
     "docs": "esdoc -c .esdoc.json",
