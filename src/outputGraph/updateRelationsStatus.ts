@@ -4,7 +4,7 @@ import {
   isSameRelation,
   Relation,
 } from '@ysk8hori/typescript-graph/dist/src/models';
-import { pipe, filter, forEach, set } from 'remeda';
+import { pipe, filter, forEach } from 'remeda';
 
 /** 削除された Relation にマークをつける */
 export default function updateRelationsStatus(
