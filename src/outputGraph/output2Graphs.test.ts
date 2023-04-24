@@ -1,5 +1,5 @@
 import { Graph, Node } from '@ysk8hori/typescript-graph/dist/src/models';
-import { outputGraph } from './outputGraph';
+import { output2Graphs } from './outputGraph';
 
 beforeEach(() => {
   global.markdown = jest.fn();
@@ -37,31 +37,17 @@ const e: Node = {
   changeStatus: 'not_modified',
 };
 
-test('出力可能なグラフがない場合は何も出力しない', () => {
-  const graph = {
-    nodes: [],
-    relations: [],
-  };
-  const meta = {
-    rootDir: '',
-  };
-  const renamed = undefined;
-  global.danger = {
-    github: { pr: { title: 'My Test Title' } },
-    git: {
-      modified_files: [],
-      created_files: [],
-      deleted_files: [],
-    },
-  };
-  outputGraph(graph, graph, meta, renamed);
-  expect(global.markdown).not.toHaveBeenCalled();
-});
-
-test('追加や依存の削除がある場合', () => {
-  const graphA: Graph = {
-    nodes: [a, c, d, e],
+test('削除がある場合', async () => {
+  const base: Graph = {
+    nodes: [a, b, c, d, e],
     relations: [
+      {
+        from: a,
+        to: b,
+        kind: 'depends_on',
+        fullText: '',
+        changeStatus: 'not_modified',
+      },
       {
         from: a,
         to: c,
@@ -85,12 +71,12 @@ test('追加や依存の削除がある場合', () => {
       },
     ],
   };
-  const graphB: Graph = {
-    nodes: [a, b, c, d, e],
+  const head: Graph = {
+    nodes: [a, c, d, e],
     relations: [
       {
         from: a,
-        to: b,
+        to: c,
         kind: 'depends_on',
         fullText: '',
         changeStatus: 'not_modified',
@@ -119,35 +105,53 @@ test('追加や依存の削除がある場合', () => {
     github: { pr: { title: '' } },
     git: {
       modified_files: [a.path],
-      created_files: [b.path],
-      deleted_files: [],
+      created_files: [],
+      deleted_files: [b.path],
     },
   };
-  outputGraph(graphA, graphB, meta, renamed);
-  expect((global.markdown as jest.Mock).mock.calls[0][0])
-    .toMatchInlineSnapshot(`
-    "
+  await output2Graphs(base, head, meta, renamed);
+  expect((global.markdown as jest.Mock).mock.calls[0]).toMatchInlineSnapshot(`
+    [
+      "
     ## TypeScript Graph - Diff
 
 
 
+    ### Base Branch
+
     \`\`\`mermaid
     flowchart
-        classDef created fill:cyan,stroke:#999,color:black
         classDef modified fill:yellow,stroke:#999,color:black
+        classDef deleted fill:dimgray,stroke:#999,color:black,stroke-dasharray: 4 4,stroke-width:2px;
         subgraph src["src"]
             src/A.tsx["A"]:::modified
-            src/B.tsx["B"]:::created
+            src/B.tsx["B"]:::deleted
             src/C.tsx["C"]
             src/1["/1"]:::dir
         end
         src/A.tsx-->src/B.tsx
+        src/A.tsx-->src/C.tsx
         src/A.tsx-->src/1
-        src/A.tsx-.->src/C.tsx
+
+    \`\`\`
+
+    ### Head Branch
+
+    \`\`\`mermaid
+    flowchart
+        classDef modified fill:yellow,stroke:#999,color:black
+        subgraph src["src"]
+            src/A.tsx["A"]:::modified
+            src/C.tsx["C"]
+            src/1["/1"]:::dir
+        end
+        src/A.tsx-->src/C.tsx
+        src/A.tsx-->src/1
 
     \`\`\`
 
 
-    "
+    ",
+    ]
   `);
 });
