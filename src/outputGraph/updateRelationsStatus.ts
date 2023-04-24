@@ -4,14 +4,25 @@ import {
   isSameRelation,
   Relation,
 } from '@ysk8hori/typescript-graph/dist/src/models';
-import { pipe, filter, forEach, set } from 'remeda';
+import { pipe, filter, forEach } from 'remeda';
 
 /** 削除された Relation にマークをつける */
-export default function markRelationsAsDeleted(
+export default function updateRelationsStatus(
   baseGraph: Graph,
   headGraph: Graph,
 ) {
-  pipe(
+  const createdRelations = pipe(
+    headGraph.relations,
+    filter(isRelationOfDependsOn),
+    filter(
+      headRelation =>
+        !baseGraph.relations.some(baseRelation =>
+          isSameRelation(baseRelation, headRelation),
+        ),
+    ),
+    forEach(relation => (relation.changeStatus = 'created')),
+  );
+  const deletedRelations = pipe(
     baseGraph.relations,
     filter(isRelationOfDependsOn),
     filter(
@@ -20,8 +31,9 @@ export default function markRelationsAsDeleted(
           isSameRelation(baseRelation, headRelation),
         ),
     ),
-    forEach(relation => set(relation, 'changeStatus', 'deleted')),
+    forEach(relation => (relation.changeStatus = 'deleted')),
   );
+  return { deletedRelations, createdRelations };
 }
 
 function isRelationOfDependsOn(
