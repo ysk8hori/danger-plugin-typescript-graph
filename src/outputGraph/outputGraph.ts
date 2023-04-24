@@ -32,8 +32,13 @@ export function outputGraph(
     renamed,
   );
 
-  // グラフが大きすぎる場合は表示しない
+  if (graph.nodes.length === 0) {
+    // グラフが空の場合は表示しない
+    return;
+  }
+
   if (graph.nodes.length > getMaxSize()) {
+    // グラフが大きすぎる場合は表示しない
     markdown(`
 ## TypeScript Graph - Diff
 
@@ -95,6 +100,11 @@ export async function output2Graphs(
     fullBaseGraph,
     fullHeadGraph,
   );
+
+  if (baseGraph.nodes.length === 0 && headGraph.nodes.length === 0) {
+    // base と head のグラフが空の場合は表示しない
+    return;
+  }
 
   // base または head のグラフが大きすぎる場合は表示しない
   if (
