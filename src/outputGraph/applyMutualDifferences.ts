@@ -29,31 +29,56 @@ export default function applyMutualDifferences(
       ?.flatMap(diff => [diff.previous_filename, diff.filename])
       .filter(Boolean) ?? []),
   ];
+  log('includes:', includes);
 
   const abstractionTargetsForBase = pipe(
     includes,
     extractNoAbstractionDirs,
     dirs => extractAbstractionTarget(dirs, fullBaseGraph),
   );
+  log('abstractionTargetsForBase:', abstractionTargetsForBase);
   const baseGraph = pipe(
     fullBaseGraph,
     graph => filterGraph(includes, ['node_modules'], graph),
+    graph => (
+      log('filtered base graph.nodes.length:', graph.nodes.length),
+      log('filtered base graph.relations.length:', graph.relations.length),
+      graph
+    ),
     graph => abstraction(abstractionTargetsForBase, graph),
+    graph => (
+      log('abstracted base graph.nodes.length:', graph.nodes.length),
+      log('abstracted base graph.relations.length:', graph.relations.length),
+      graph
+    ),
     graph => addStatus({ modified, created, deleted }, graph),
   );
-  log('baseGraph(abstracted):', baseGraph);
+  log('baseGraph.nodes.length:', baseGraph.nodes.length);
+  log('baseGraph.relations.length:', baseGraph.relations.length);
 
   const abstractionTargetsForHead = pipe(
     includes,
     extractNoAbstractionDirs,
     dirs => extractAbstractionTarget(dirs, fullHeadGraph),
   );
+  log('abstractionTargetsForHead:', abstractionTargetsForHead);
   const headGraph = pipe(
     fullHeadGraph,
     graph => filterGraph(includes, ['node_modules'], graph),
+    graph => (
+      log('filtered head graph.nodes.length:', graph.nodes.length),
+      log('filtered head graph.relations.length:', graph.relations.length),
+      graph
+    ),
     graph => abstraction(abstractionTargetsForHead, graph),
+    graph => (
+      log('abstracted head graph.nodes.length:', graph.nodes.length),
+      log('abstracted head graph.relations.length:', graph.relations.length),
+      graph
+    ),
     graph => addStatus({ modified, created, deleted }, graph),
   );
-  log('headGraph(abstracted):', headGraph);
+  log('headGraph.nodes.length:', headGraph.nodes.length);
+  log('headGraph.relations.length:', headGraph.relations.length);
   return { baseGraph, headGraph };
 }

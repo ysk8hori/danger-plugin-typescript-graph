@@ -24,10 +24,13 @@ export default function mergeGraphsWithDifferences(
     fullBaseGraph,
     fullHeadGraph,
   );
+  log('createdRelations:', createdRelations);
+  log('deletedRelations:', deletedRelations);
 
   // base と head のグラフをマージする
   const mergedGraph = mergeGraph(fullHeadGraph, fullBaseGraph);
-  log('mergedGraph:', mergedGraph);
+  log('mergedGraph.nodes.length:', mergedGraph.nodes.length);
+  log('mergedGraph.relations.length:', mergedGraph.relations.length);
 
   const includes = [
     ...created,
@@ -42,18 +45,33 @@ export default function mergeGraphsWithDifferences(
       .flatMap(relation => [relation.from, relation.to])
       .map(relation => relation.path),
   ];
+  log('includes:', includes);
 
   const abstractionTarget = pipe(includes, extractNoAbstractionDirs, dirs =>
     extractAbstractionTarget(dirs, mergedGraph),
   );
+  log('abstractionTarget:', abstractionTarget);
 
   const graph = pipe(
     mergedGraph,
     graph => filterGraph(includes, ['node_modules'], graph),
+    graph => (
+      log('filteredGraph.nodes.length:', graph.nodes.length),
+      log('filteredGraph.relations.length:', graph.relations.length),
+      graph
+    ),
     graph => abstraction(abstractionTarget, graph),
-    graph => (log('abstractedGraph:', graph), graph),
+    graph => (
+      log('abstractedGraph.nodes.length:', graph.nodes.length),
+      log('abstractedGraph.relations.length:', graph.relations.length),
+      graph
+    ),
     graph => addStatus({ modified, created, deleted }, graph),
-    graph => (log('graph:', graph), graph),
+    graph => (
+      log('graph.nodes.length:', graph.nodes.length),
+      log('graph.relations.length:', graph.relations.length),
+      graph
+    ),
   );
 
   return graph;
