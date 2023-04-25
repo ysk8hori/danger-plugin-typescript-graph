@@ -3,8 +3,8 @@ import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGra
 import { Graph, Meta } from '@ysk8hori/typescript-graph/dist/src/models';
 import { execSync } from 'child_process';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
-import { log } from './utils/log';
-import { getTsconfigRoot } from './utils/config';
+import { log } from './utils/utils2/log';
+import { getTsconfigRoot } from './utils/utils2/config/config';
 import path from 'path';
 declare let danger: DangerDSLType;
 

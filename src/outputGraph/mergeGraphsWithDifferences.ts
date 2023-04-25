@@ -2,7 +2,7 @@ import { abstraction } from '@ysk8hori/typescript-graph/dist/src/graph/abstracti
 import { mergeGraph } from '@ysk8hori/typescript-graph/dist/src/graph/utils';
 import { Graph } from '@ysk8hori/typescript-graph/dist/src/models';
 import { pipe } from 'remeda';
-import { log } from '../utils/log';
+import { log } from '../utils/utils2/log';
 import addStatus from './addStatus';
 import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
