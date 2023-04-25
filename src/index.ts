@@ -36,7 +36,7 @@ async function makeGraph() {
   ) {
     return;
   }
-
+  // hoge
   const [renamed, { fullHeadGraph, fullBaseGraph, meta }] = await Promise.all([
     getRenameFiles(),
     getFullGraph(),
