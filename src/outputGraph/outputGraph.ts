@@ -56,7 +56,6 @@ export function outputGraph(
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
-  log('mermaidLines:', mermaidLines);
 
   markdown(`
 ## TypeScript Graph - Diff
@@ -130,7 +129,6 @@ export async function output2Graphs(
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
-  log('baseLines:', baseLines);
 
   // head の書き出し
   const headLines: string[] = [];
@@ -138,7 +136,6 @@ export async function output2Graphs(
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
-  log('headLines:', headLines);
 
   markdown(`
 ## TypeScript Graph - Diff

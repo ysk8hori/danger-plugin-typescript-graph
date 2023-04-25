@@ -41,9 +41,11 @@ async function makeGraph() {
     getRenameFiles(),
     getFullGraph(),
   ]);
-  log('renamed.length:', renamed?.length);
-  log('fullHeadGraph.nodes.length:', fullHeadGraph.nodes.length);
+  log('renamed:', renamed);
   log('fullBaseGraph.nodes.length:', fullBaseGraph.nodes.length);
+  log('fullBaseGraph.relations.length:', fullBaseGraph.relations.length);
+  log('fullHeadGraph.nodes.length:', fullHeadGraph.nodes.length);
+  log('fullHeadGraph.relations.length:', fullHeadGraph.relations.length);
   log('meta:', meta);
 
   // head のグラフが空の場合は何もしない
