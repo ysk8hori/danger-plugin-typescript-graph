@@ -1,5 +1,6 @@
 // extractAbstractionTarget のテスト
 import extractAbstractionTarget from './extractAbstractionTarget';
+import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 
 it('グラフと、抽象化してはいけないファイルのパスから、抽象化して良いディレクトリのパスを取得する', () => {
   expect(
@@ -165,4 +166,41 @@ it('グラフと、抽象化してはいけないファイルのパスから、�
       },
     ),
   ).toEqual(['src/components/game/utils/answers']);
+});
+
+it('深い階層のディレクトリが可能な限り浅い階層で抽象化されること', () => {
+  expect(
+    extractAbstractionTarget(extractNoAbstractionDirs(['src/a/a.ts']), {
+      nodes: [
+        {
+          path: 'src/a/a.ts',
+          name: 'a.ts',
+          changeStatus: 'not_modified',
+        },
+        {
+          path: 'src/a/b/b.ts',
+          name: 'b.ts',
+          changeStatus: 'not_modified',
+        },
+        {
+          path: 'src/a/b/c/c.ts',
+          name: 'c.ts',
+          changeStatus: 'not_modified',
+        },
+        {
+          path: 'src/a/b/c/d/d.ts',
+          name: 'd.ts',
+          changeStatus: 'not_modified',
+        },
+      ],
+
+      relations: [],
+    }),
+  ).toMatchInlineSnapshot(`
+    [
+      "src/a/b",
+      "src/a/b/c",
+      "src/a/b/c/d",
+    ]
+  `);
 });
