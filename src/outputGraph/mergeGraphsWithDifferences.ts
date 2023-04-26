@@ -38,12 +38,6 @@ export default function mergeGraphsWithDifferences(
     ...(renamed
       ?.flatMap(diff => [diff.previous_filename, diff.filename])
       .filter(Boolean) ?? []),
-    ...createdRelations
-      .flatMap(relation => [relation.from, relation.to])
-      .map(relation => relation.path),
-    ...deletedRelations
-      .flatMap(relation => [relation.from, relation.to])
-      .map(relation => relation.path),
   ];
   log('includes:', includes);
 

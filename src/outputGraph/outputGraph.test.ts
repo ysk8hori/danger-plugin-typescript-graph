@@ -138,8 +138,8 @@ test('追加や依存の削除がある場合', () => {
         subgraph src["src"]
             src/A.tsx["A"]:::modified
             src/B.tsx["B"]:::created
-            src/C.tsx["C"]
             src/1["/1"]:::dir
+            src/C.tsx["C"]
         end
         src/A.tsx-->src/B.tsx
         src/A.tsx-->src/1
