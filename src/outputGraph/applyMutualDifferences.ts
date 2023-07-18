@@ -6,6 +6,7 @@ import addStatus from './addStatus';
 import extractAbstractionTarget from './extractAbstractionTarget';
 import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGraph';
+import { exclude } from '../utils/config';
 
 /**
  * ２つのグラフの差分を互いに反映する。
@@ -39,7 +40,7 @@ export default function applyMutualDifferences(
   log('abstractionTargetsForBase:', abstractionTargetsForBase);
   const baseGraph = pipe(
     fullBaseGraph,
-    graph => filterGraph(includes, ['node_modules'], graph),
+    graph => filterGraph(includes, ['node_modules', ...exclude()], graph),
     graph => (
       log('filtered base graph.nodes.length:', graph.nodes.length),
       log('filtered base graph.relations.length:', graph.relations.length),
@@ -64,7 +65,7 @@ export default function applyMutualDifferences(
   log('abstractionTargetsForHead:', abstractionTargetsForHead);
   const headGraph = pipe(
     fullHeadGraph,
-    graph => filterGraph(includes, ['node_modules'], graph),
+    graph => filterGraph(includes, ['node_modules', ...exclude()], graph),
     graph => (
       log('filtered head graph.nodes.length:', graph.nodes.length),
       log('filtered head graph.relations.length:', graph.relations.length),

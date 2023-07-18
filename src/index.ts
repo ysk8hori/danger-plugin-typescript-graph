@@ -3,6 +3,7 @@ import getRenameFiles from './getRenameFiles';
 import getFullGraph from './getFullGraph';
 import { outputGraph, output2Graphs } from './outputGraph/outputGraph';
 import { log } from './utils/log';
+import { readRuntimeConfig } from './utils/config';
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 declare let danger: DangerDSLType;
 export declare function message(message: string): void;
@@ -22,6 +23,8 @@ export default async function typescriptGraph() {
 }
 
 async function makeGraph() {
+  readRuntimeConfig();
+
   // 以下の *_files は src/index.ts のようなパス文字列になっている
   const modified = danger.git.modified_files;
   log('modified:', modified);

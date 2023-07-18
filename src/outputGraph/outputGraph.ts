@@ -1,7 +1,6 @@
 import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
 import { Graph, Meta } from '@ysk8hori/typescript-graph/dist/src/models';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
-import { log } from '../utils/log';
 import { getMaxSize, getOrientation, isInDetails } from '../utils/config';
 import mergeGraphsWithDifferences from './mergeGraphsWithDifferences';
 import applyMutualDifferences from './applyMutualDifferences';
