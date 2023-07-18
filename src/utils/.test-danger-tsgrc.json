@@ -1,0 +1,8 @@
+{
+  "tsconfigRoot": "./test/tsconfig.json",
+  "maxSize": 999,
+  "orientation": "LR",
+  "debug": true,
+  "inDetails": true,
+  "exclude": ["node_modules", ".test.ts", ".spec.ts", ".d.ts"]
+}
