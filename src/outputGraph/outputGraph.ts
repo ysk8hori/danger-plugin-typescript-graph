@@ -86,6 +86,7 @@ export async function output2Graphs(
       }[]
     | undefined,
 ) {
+  // hoge
   const modified = danger.git.modified_files;
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
