@@ -28,6 +28,7 @@
     "build": "tsc",
     "type-check": "tsc --noEmit",
     "test": "jest",
+    "test:watch": "jest --watch",
     "predocs": "rm -rf docs/",
     "docs": "esdoc -c .esdoc.json",
     "semantic-release": "semantic-release",
