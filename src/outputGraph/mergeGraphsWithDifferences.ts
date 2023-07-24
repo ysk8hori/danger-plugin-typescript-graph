@@ -46,6 +46,7 @@ export default function mergeGraphsWithDifferences(
     extractAbstractionTarget(dirs, mergedGraph),
   );
   log('abstractionTarget:', abstractionTarget);
+  console.log('exclude', exclude());
 
   const graph = pipe(
     mergedGraph,
