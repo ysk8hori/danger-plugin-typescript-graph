@@ -2,11 +2,14 @@ import mermaidify from '@ysk8hori/typescript-graph/dist/src/mermaidify';
 import { Graph, Meta } from '@ysk8hori/typescript-graph/dist/src/models';
 import { DangerDSLType } from 'danger/distribution/dsl/DangerDSL';
 import { getMaxSize, getOrientation, isInDetails } from '../utils/config';
-import mergeGraphsWithDifferences from './mergeGraphsWithDifferences';
+import applyMutualDifferences from './applyMutualDifferences';
 declare let danger: DangerDSLType;
 export declare function markdown(message: string): void;
 
-export function outputGraph(
+/**
+ * ファイルの削除またはリネームがある場合は Graph を2つ表示する
+ */
+export async function output2Graphs(
   fullBaseGraph: Graph,
   fullHeadGraph: Graph,
   meta: Meta,
@@ -21,36 +24,48 @@ export function outputGraph(
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
 
-  const graph = mergeGraphsWithDifferences(
-    fullBaseGraph,
-    fullHeadGraph,
+  const { baseGraph, headGraph } = applyMutualDifferences(
     created,
     deleted,
     modified,
     renamed,
+    fullBaseGraph,
+    fullHeadGraph,
   );
 
-  if (graph.nodes.length === 0) {
-    // グラフが空の場合は表示しない
+  if (baseGraph.nodes.length === 0 && headGraph.nodes.length === 0) {
+    // base と head のグラフが空の場合は表示しない
     return;
   }
 
-  if (graph.nodes.length > getMaxSize()) {
-    // グラフが大きすぎる場合は表示しない
+  // base または head のグラフが大きすぎる場合は表示しない
+  if (
+    baseGraph.nodes.length > getMaxSize() ||
+    headGraph.nodes.length > getMaxSize()
+  ) {
     markdown(`
 ## TypeScript Graph - Diff
 
 > 表示ノード数が多いため、グラフを表示しません。
 > グラフを表示したい場合、環境変数 TSG_MAX_SIZE を設定してください。
 >
-> 本PRでの表示ノード数: ${graph.nodes.length}
+> Base branch の表示ノード数: ${baseGraph.nodes.length}
+> Head branch の表示ノード数: ${headGraph.nodes.length}
 > 最大表示ノード数: ${getMaxSize()}
 `);
     return;
   }
 
-  const mermaidLines: string[] = [];
-  mermaidify((arg: string) => mermaidLines.push(arg), graph, {
+  // base の書き出し
+  const baseLines: string[] = [];
+  await mermaidify((arg: string) => baseLines.push(arg), baseGraph, {
+    rootDir: meta.rootDir,
+    ...getOrientation(),
+  });
+
+  // head の書き出し
+  const headLines: string[] = [];
+  await mermaidify((arg: string) => headLines.push(arg), headGraph, {
     rootDir: meta.rootDir,
     ...getOrientation(),
   });
@@ -63,8 +78,16 @@ ${outputIfInDetails(`
 <summary>mermaid</summary>
 `)}
 
+### Base Branch
+
 \`\`\`mermaid
-${mermaidLines.join('')}
+${baseLines.join('')}
+\`\`\`
+
+### Head Branch
+
+\`\`\`mermaid
+${headLines.join('')}
 \`\`\`
 
 ${outputIfInDetails('</details>')}

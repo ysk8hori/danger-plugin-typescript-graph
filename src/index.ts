@@ -1,7 +1,8 @@
 import { DangerDSLType } from '../node_modules/danger/distribution/dsl/DangerDSL';
 import getRenameFiles from './getRenameFiles';
 import getFullGraph from './getFullGraph';
-import { outputGraph, output2Graphs } from './outputGraph/outputGraph';
+import { outputGraph, output2Graphs } from './outputGraph';
+
 import { log } from './utils/log';
 import { readRuntimeConfig } from './utils/config';
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.

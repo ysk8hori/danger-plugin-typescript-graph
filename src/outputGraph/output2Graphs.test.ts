@@ -1,5 +1,5 @@
 import { Graph, Node } from '@ysk8hori/typescript-graph/dist/src/models';
-import { output2Graphs } from './outputGraph';
+import { output2Graphs } from './output2Graphs';
 
 beforeEach(() => {
   global.markdown = jest.fn();
