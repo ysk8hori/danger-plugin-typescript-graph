@@ -1,7 +1,7 @@
 import { DangerDSLType } from '../node_modules/danger/distribution/dsl/DangerDSL';
 import getRenameFiles from './getRenameFiles';
 import getFullGraph from './getFullGraph';
-import { outputGraph, output2Graphs } from './outputGraph';
+import { outputGraph, output2Graphs } from './graph';
 
 import { log } from './utils/log';
 import { readRuntimeConfig } from './utils/config';
