@@ -1,6 +1,6 @@
 import { Graph, Node } from '@ysk8hori/typescript-graph/dist/src/models';
 import { outputGraph } from './outputGraph';
-
+// hoge
 beforeEach(() => {
   global.markdown = jest.fn();
 });
