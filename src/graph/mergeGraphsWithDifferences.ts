@@ -69,5 +69,12 @@ export default function mergeGraphsWithDifferences(
     ),
   );
 
-  return graph;
+  const tsgCommand = `tsg --include ${includes.join(
+    ' ',
+  )} --highlight ${includes.join(' ')} --exclude node_modules ${[
+    'node_modules',
+    ...exclude(),
+  ].join(' ')} --abstraction ${abstractionTarget.join(' ')}`;
+
+  return { graph, tsgCommand };
 }

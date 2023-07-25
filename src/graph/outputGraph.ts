@@ -21,7 +21,7 @@ export function outputGraph(
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
 
-  const graph = mergeGraphsWithDifferences(
+  const { graph, tsgCommand } = mergeGraphsWithDifferences(
     fullBaseGraph,
     fullHeadGraph,
     created,
@@ -45,6 +45,10 @@ export function outputGraph(
 >
 > 本PRでの表示ノード数: ${graph.nodes.length}
 > 最大表示ノード数: ${getMaxSize()}
+
+\`\`\`bash
+${tsgCommand}
+\`\`\`
 `);
     return;
   }
@@ -62,6 +66,10 @@ ${outputIfInDetails(`
 <details>
 <summary>mermaid</summary>
 `)}
+
+\`\`\`bash
+${tsgCommand}
+\`\`\`
 
 \`\`\`mermaid
 ${mermaidLines.join('')}
