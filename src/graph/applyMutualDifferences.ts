@@ -81,5 +81,22 @@ export default function applyMutualDifferences(
   );
   log('headGraph.nodes.length:', headGraph.nodes.length);
   log('headGraph.relations.length:', headGraph.relations.length);
-  return { baseGraph, headGraph };
+
+  const tsgCommand = `tsg --include ${includes.join(
+    ' ',
+  )} --highlight ${includes.join(' ')} --exclude node_modules ${[
+    'node_modules',
+    ...exclude(),
+  ].join(' ')} --abstraction ${[
+    ...abstractionTargetsForBase,
+    ...abstractionTargetsForHead,
+  ] // 重複を除去する
+    .reduce<string[]>((prev, current) => {
+      if (!current) return prev;
+      if (!prev.includes(current)) prev.push(current);
+      return prev;
+    }, [])
+    .join(' ')}`;
+
+  return { baseGraph, headGraph, tsgCommand };
 }

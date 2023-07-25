@@ -24,7 +24,7 @@ export async function output2Graphs(
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
 
-  const { baseGraph, headGraph } = applyMutualDifferences(
+  const { baseGraph, headGraph, tsgCommand } = applyMutualDifferences(
     created,
     deleted,
     modified,
@@ -52,6 +52,10 @@ export async function output2Graphs(
 > Base branch の表示ノード数: ${baseGraph.nodes.length}
 > Head branch の表示ノード数: ${headGraph.nodes.length}
 > 最大表示ノード数: ${getMaxSize()}
+
+\`\`\`bash
+${tsgCommand}
+\`\`\`
 `);
     return;
   }
@@ -77,6 +81,10 @@ ${outputIfInDetails(`
 <details>
 <summary>mermaid</summary>
 `)}
+
+\`\`\`bash
+${tsgCommand}
+\`\`\`
 
 ### Base Branch
 
