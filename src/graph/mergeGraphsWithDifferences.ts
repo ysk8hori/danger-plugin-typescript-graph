@@ -9,6 +9,7 @@ import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import updateRelationsStatus from './updateRelationsStatus';
 import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGraph';
 import { exclude } from '../utils/config';
+import { extractAbstractionTargetFromGraphs } from './extractAbstractionTargetFromGraphs';
 
 /** ２つのグラフからその差分を反映した１つのグラフを生成する */
 export default function mergeGraphsWithDifferences(
@@ -74,7 +75,9 @@ export default function mergeGraphsWithDifferences(
   )} --highlight ${includes.join(' ')} --exclude node_modules ${[
     'node_modules',
     ...exclude(),
-  ].join(' ')} --abstraction ${abstractionTarget.join(' ')}`;
+  ].join(' ')} --abstraction ${extractAbstractionTargetFromGraphs(graph).join(
+    ' ',
+  )}`;
 
   return { graph, tsgCommand };
 }
