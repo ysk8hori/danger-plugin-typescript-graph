@@ -8,6 +8,7 @@ import extractNoAbstractionDirs from './extractNoAbstractionDirs';
 import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGraph';
 import { exclude } from '../utils/config';
 import { extractAbstractionTargetFromGraphs } from './extractAbstractionTargetFromGraphs';
+import { createTsgCommand } from './createTsgCommand';
 
 /**
  * ２つのグラフの差分を互いに反映する。
@@ -83,15 +84,11 @@ export default function applyMutualDifferences(
   log('headGraph.nodes.length:', headGraph.nodes.length);
   log('headGraph.relations.length:', headGraph.relations.length);
 
-  const tsgCommand = `tsg --include ${includes.join(
-    ' ',
-  )} --highlight ${includes.join(' ')} --exclude node_modules ${[
-    'node_modules',
-    ...exclude(),
-  ].join(' ')} --abstraction ${extractAbstractionTargetFromGraphs(
-    baseGraph,
-    headGraph,
-  ).join(' ')}`;
+  const tsgCommand = createTsgCommand({
+    includes,
+    excludes: ['node_modules', ...exclude()],
+    abstractions: extractAbstractionTargetFromGraphs(baseGraph, headGraph),
+  });
 
   return { baseGraph, headGraph, tsgCommand };
 }

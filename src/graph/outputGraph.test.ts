@@ -132,7 +132,7 @@ test('追加や依存の削除がある場合', () => {
 
 
     \`\`\`bash
-    tsg --include src/B.tsx src/A.tsx --highlight src/B.tsx src/A.tsx --exclude node_modules node_modules --abstraction src/1
+    tsg  --include src/B.tsx src/A.tsx --highlight src/B.tsx src/A.tsx --exclude node_modules --abstraction src/1
     \`\`\`
 
     \`\`\`mermaid
