@@ -118,7 +118,7 @@ test('削除がある場合', async () => {
 
 
     \`\`\`bash
-    tsg --include src/A.tsx --highlight src/A.tsx --exclude node_modules node_modules --abstraction src/1
+    tsg  --include src/A.tsx --highlight src/A.tsx --exclude node_modules --abstraction src/1
     \`\`\`
 
     ### Base Branch
