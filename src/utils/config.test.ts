@@ -3,6 +3,7 @@ import {
   getMaxSize,
   getOrientation,
   getTsconfigRoot,
+  includeIndexFileDependencies,
   isDebugEnabled,
   isInDetails,
   readRuntimeConfig,
@@ -108,4 +109,22 @@ test('isInDetails は環境変数 TSG_IN_DETAILS が設定されていない場�
   process.env = {};
   readRuntimeConfig('./src/utils/.test-danger-tsgrc.json');
   expect(isInDetails()).toBeTruthy();
+});
+
+test('includeIndexFileDependencies は環境変数もRuntimeConfigも設定されていない場合は false を 返す', () => {
+  process.env = {};
+  clearRuntimeConfig();
+  expect(includeIndexFileDependencies()).toBeFalsy();
+});
+
+test('includeIndexFileDependencies は .danger-tsgrc.json の debug より環境変数 TSG_INCLUDE_INDEX_FILE_DEPENDENCIES を優先して返す', () => {
+  process.env.TSG_INCLUDE_INDEX_FILE_DEPENDENCIES = 'false';
+  readRuntimeConfig('./src/utils/.test-danger-tsgrc.json');
+  expect(includeIndexFileDependencies()).toBeFalsy();
+});
+
+test('includeIndexFileDependencies は環境変数 TSG_INCLUDE_INDEX_FILE_DEPENDENCIES が設定されていない場合、.danger-tsgrc.json の debug を返す', () => {
+  process.env = {};
+  readRuntimeConfig('./src/utils/.test-danger-tsgrc.json');
+  expect(includeIndexFileDependencies()).toBeTruthy();
 });
