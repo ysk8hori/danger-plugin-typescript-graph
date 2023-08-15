@@ -27,6 +27,7 @@ export default function applyMutualDifferences(
 ) {
   const includes = [
     ...created,
+    ...deleted,
     ...modified,
     ...(renamed
       ?.flatMap(diff => [diff.previous_filename, diff.filename])
