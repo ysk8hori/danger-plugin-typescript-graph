@@ -1,5 +1,6 @@
 {
   "maxSize": 100,
   "debug": true,
-  "exclude": ["node_modules", ".test.ts", ".spec.ts", ".d.ts", "/utils"]
+  "exclude": ["node_modules", ".test.ts", ".spec.ts", ".d.ts", "/utils"],
+  "includeIndexFileDependencies": true
 }

@@ -16,6 +16,8 @@ const dangerPluginTsgConfigScheme = z.object({
   inDetails: z.boolean().optional(),
   /** ファイルの除外対象 */
   exclude: z.array(z.string()).optional(),
+  /** 変更対象のファイルが同階層の index.ts などから参照されている場合、その index.ts への依存ファイルも表示するかどうか */
+  includeIndexFileDependencies: z.boolean().optional(),
 });
 
 export type DangerPluginTsgConfigScheme = z.infer<
@@ -99,4 +101,13 @@ export function isInDetails(): boolean {
 
 export function exclude(): string[] {
   return rc?.exclude ?? [];
+}
+
+/** 変更対象のファイルが同階層の index.ts などから参照されている場合、その index.ts への依存ファイルも表示するかどうか */
+export function isIncludeIndexFileDependencies(): boolean {
+  return process.env.TSG_INCLUDE_INDEX_FILE_DEPENDENCIES === 'true'
+    ? true
+    : process.env.TSG_INCLUDE_INDEX_FILE_DEPENDENCIES === 'false'
+    ? false
+    : rc?.includeIndexFileDependencies ?? false;
 }

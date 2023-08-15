@@ -11,6 +11,7 @@ import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGra
 import { exclude } from '../utils/config';
 import { extractAbstractionTargetFromGraphs } from './extractAbstractionTargetFromGraphs';
 import { createTsgCommand } from './createTsgCommand';
+import { createIncludeList } from './createIncludeList';
 
 /** ２つのグラフからその差分を反映した１つのグラフを生成する */
 export default function mergeGraphsWithDifferences(
@@ -35,13 +36,13 @@ export default function mergeGraphsWithDifferences(
   log('mergedGraph.nodes.length:', mergedGraph.nodes.length);
   log('mergedGraph.relations.length:', mergedGraph.relations.length);
 
-  const includes = [
-    ...created,
-    ...modified,
-    ...(renamed
-      ?.flatMap(diff => [diff.previous_filename, diff.filename])
-      .filter(Boolean) ?? []),
-  ];
+  const includes = createIncludeList({
+    created,
+    deleted,
+    modified,
+    renamed,
+    graphs: [mergedGraph],
+  });
   log('includes:', includes);
 
   const abstractionTarget = pipe(includes, extractNoAbstractionDirs, dirs =>
