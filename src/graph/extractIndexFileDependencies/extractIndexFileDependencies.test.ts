@@ -5,7 +5,7 @@ test('すべて空配列でもエラーとならない', () => {
   expect(
     extractIndexFileDependencies({
       includeFilePaths: [],
-      graph: { nodes: [], relations: [] },
+      graphs: [{ nodes: [], relations: [] }],
     }),
   ).toEqual([]);
 });
@@ -56,17 +56,19 @@ test('index.ts から参照されるノードが includeFilePath に含まれる
   expect(
     extractIndexFileDependencies({
       includeFilePaths: [a.path, a2.path, b.path],
-      graph: {
-        nodes,
-        relations: [
-          // 抽出対象となる relation
-          relation(indexA, a),
-          // 抽出対象となる relation
-          relation(indexA, a2),
-          // 抽出対象とならない relation
-          relation(main, b),
-        ],
-      },
+      graphs: [
+        {
+          nodes,
+          relations: [
+            // 抽出対象となる relation
+            relation(indexA, a),
+            // 抽出対象となる relation
+            relation(indexA, a2),
+            // 抽出対象とならない relation
+            relation(main, b),
+          ],
+        },
+      ],
     }),
   ).toEqual([indexA.path]);
 });
@@ -75,10 +77,12 @@ test('includeFilePaths が空配列でもエラーにならない', () => {
   expect(
     extractIndexFileDependencies({
       includeFilePaths: [],
-      graph: {
-        nodes,
-        relations: [relation(indexA, a), relation(main, b)],
-      },
+      graphs: [
+        {
+          nodes,
+          relations: [relation(indexA, a), relation(main, b)],
+        },
+      ],
     }),
   ).toEqual([]);
 });
@@ -87,10 +91,12 @@ test('includeFilePaths に空文字が含まれていても全ての index.ts �
   expect(
     extractIndexFileDependencies({
       includeFilePaths: [''],
-      graph: {
-        nodes,
-        relations: [relation(indexA, a), relation(main, b)],
-      },
+      graphs: [
+        {
+          nodes,
+          relations: [relation(indexA, a), relation(main, b)],
+        },
+      ],
     }),
   ).toEqual([]);
 });
@@ -99,10 +105,12 @@ test('graph が空っぽでもエラーにならない', () => {
   expect(
     extractIndexFileDependencies({
       includeFilePaths: ['a.ts', 'b.ts'],
-      graph: {
-        nodes: [],
-        relations: [],
-      },
+      graphs: [
+        {
+          nodes: [],
+          relations: [],
+        },
+      ],
     }),
   ).toEqual([]);
 });

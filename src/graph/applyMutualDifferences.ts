@@ -9,6 +9,7 @@ import { filterGraph } from '@ysk8hori/typescript-graph/dist/src/graph/filterGra
 import { exclude } from '../utils/config';
 import { extractAbstractionTargetFromGraphs } from './extractAbstractionTargetFromGraphs';
 import { createTsgCommand } from './createTsgCommand';
+import { createIncludeList } from './createIncludeList';
 
 /**
  * ２つのグラフの差分を互いに反映する。
@@ -25,13 +26,13 @@ export default function applyMutualDifferences(
   fullBaseGraph: Graph,
   fullHeadGraph: Graph,
 ) {
-  const includes = [
-    ...created,
-    ...modified,
-    ...(renamed
-      ?.flatMap(diff => [diff.previous_filename, diff.filename])
-      .filter(Boolean) ?? []),
-  ];
+  const includes = createIncludeList({
+    created,
+    deleted,
+    modified,
+    renamed,
+    graphs: [fullBaseGraph, fullHeadGraph],
+  });
   log('includes:', includes);
 
   const abstractionTargetsForBase = pipe(
