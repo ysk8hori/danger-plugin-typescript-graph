@@ -94,7 +94,7 @@
   "dependencies": {
     "@ysk8hori/typescript-graph": "0.11.5",
     "remeda": "^1.12.0",
-    "zod": "3.22.1"
+    "zod": "3.22.2"
   },
   "release": {
     "branches": [
