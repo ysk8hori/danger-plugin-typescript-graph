@@ -92,7 +92,7 @@
     ]
   },
   "dependencies": {
-    "@ysk8hori/typescript-graph": "0.11.5",
+    "@ysk8hori/typescript-graph": "0.12.0",
     "remeda": "^1.12.0",
     "zod": "3.22.2"
   },
