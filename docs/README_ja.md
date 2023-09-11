@@ -12,6 +12,18 @@
 
 ## Usage
 
+### CI 環境で DangerJS を実行する前の設定
+
+このライブラリをインストールする前に、DangerJS が CI 環境で稼働するよう設定してください。設定には以下の 5 つのステップが含まれます：
+
+1. Danger モジュールをインクルードする。
+2. `Dangerfile` を作成し、簡単なルールを追加する。
+3. Danger が使用するアカウントを作成する。
+4. そのアカウント用にアクセストークンを設定する。
+5. CI 環境で Danger を実行するように設定する。
+
+詳細については、[DangerJS 公式の Getting Started ガイド](https://danger.systems/js/guides/getting_started)を参照してください。
+
 ### インストール
 
 ```sh

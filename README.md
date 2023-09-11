@@ -11,6 +11,18 @@ This plugin is a Danger plugin designed to automatically run the CLI tool typesc
 
 ## Usage
 
+### Preparing to Run DangerJS on CI Environment
+
+Before installing this library, make sure you have DangerJS set up to run on your CI environment. The setup involves the following 5 steps:
+
+1. Include the Danger module.
+2. Create a `Dangerfile` and add some basic rules.
+3. Create an account for Danger to use.
+4. Set up an access token for that account.
+5. Configure your CI environment to run Danger.
+
+For more details, please refer to the [DangerJS Official Getting Started Guide](https://danger.systems/js/guides/getting_started).
+
 ### Install
 
 ```sh
