@@ -11,19 +11,99 @@ This plugin is a Danger plugin designed to automatically run the CLI tool typesc
 
 ## Usage
 
-Install:
+### Install
 
 ```sh
 yarn add danger-plugin-typescript-graph --dev
 ```
 
-At a glance:
+### At a glance
 
 ```js
 // dangerfile.js
 import typescriptGraph from 'danger-plugin-typescript-graph';
 
 typescriptGraph();
+```
+
+### Sample Usage
+
+#### Basic File Modifications
+
+In this example, we show the dependency graph when you've modified `outputGraph.ts` and its related test files. The modified files are highlighted in yellow, and the files they depend on are also explicitly displayed on the graph.
+
+```mermaid
+flowchart
+    classDef modified fill:yellow,stroke:#999,color:black
+    subgraph src["src"]
+        src/utils["/utils"]:::dir
+        src/index.ts["index.ts"]
+        subgraph src/outputGraph["/outputGraph"]
+            src/outputGraph/outputGraph.ts["outputGraph.ts"]:::modified
+            src/outputGraph/output2Graphs.test.ts["output2Graphs.test.ts"]:::modified
+            src/outputGraph/mergeGraphsWithDifferences.ts["mergeGraphsWithDifferences.ts"]
+            src/outputGraph/applyMutualDifferences.ts["applyMutualDifferences.ts"]
+        end
+    end
+    src/outputGraph/outputGraph.ts-->src/utils
+    src/outputGraph/outputGraph.ts-->src/outputGraph/mergeGraphsWithDifferences.ts
+    src/outputGraph/outputGraph.ts-->src/outputGraph/applyMutualDifferences.ts
+    src/index.ts-->src/outputGraph/outputGraph.ts
+    src/outputGraph/output2Graphs.test.ts-->src/outputGraph/outputGraph.ts
+    src/outputGraph/mergeGraphsWithDifferences.ts-->src/utils
+    src/outputGraph/applyMutualDifferences.ts-->src/utils
+    src/index.ts-->src/utils
+```
+
+#### Changes Involving File Deletion or Movement
+
+This case demonstrates the impact when a file is deleted or moved. Dependency graphs are generated for both the base branch and the head branch. Deleted files are displayed in a grayed-out manner.
+
+##### Base Branch
+
+```mermaid
+flowchart
+    classDef modified fill:yellow,stroke:#999,color:black
+    classDef deleted fill:dimgray,stroke:#999,color:black,stroke-dasharray: 4 4,stroke-width:2px;
+    subgraph src["src"]
+        src/index.ts["index.ts"]:::modified
+        src/index.test.ts["index.test.ts"]
+        src/getRenameFiles.ts["getRenameFiles.ts"]
+        src/getFullGraph.ts["getFullGraph.ts"]
+        subgraph src/graph_["/graph"]
+            src/_graph__/index.ts["index.ts"]:::deleted
+            src/_graph__/outputGraph.ts["outputGraph.ts"]
+            src/_graph__/output2Graphs.ts["output2Graphs.ts"]
+        end
+    end
+    src/_graph__/index.ts-->src/_graph__/outputGraph.ts
+    src/_graph__/index.ts-->src/_graph__/output2Graphs.ts
+    src/index.ts-->src/getRenameFiles.ts
+    src/index.ts-->src/getFullGraph.ts
+    src/index.ts-->src/_graph__/index.ts
+    src/index.test.ts-->src/index.ts
+```
+
+##### Head Branch
+
+```mermaid
+flowchart
+    classDef modified fill:yellow,stroke:#999,color:black
+    subgraph src["src"]
+        src/index.ts["index.ts"]:::modified
+        src/index.test.ts["index.test.ts"]
+        src/getRenameFiles.ts["getRenameFiles.ts"]
+        src/getFullGraph.ts["getFullGraph.ts"]
+        subgraph src/graph_["/graph"]
+            src/_graph__/output2Graphs.ts["output2Graphs.ts"]
+            src/_graph__/outputGraph.ts["outputGraph.ts"]
+        end
+    end
+    src/index.ts-->src/getRenameFiles.ts
+    src/index.ts-->src/getFullGraph.ts
+    src/index.ts-->src/_graph__/output2Graphs.ts
+    src/index.ts-->src/_graph__/outputGraph.ts
+    src/index.test.ts-->src/index.ts
 ```
 
 ## Configuration
