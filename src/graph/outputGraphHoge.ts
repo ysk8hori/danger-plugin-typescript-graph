@@ -20,7 +20,7 @@ export function outputGraph(
   const modified = danger.git.modified_files;
   const created = danger.git.created_files;
   const deleted = danger.git.deleted_files;
-
+  // hoge
   const { graph, tsgCommand } = mergeGraphsWithDifferences(
     fullBaseGraph,
     fullHeadGraph,
