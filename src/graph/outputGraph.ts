@@ -83,3 +83,5 @@ ${outputIfInDetails('</details>')}
 function outputIfInDetails(str: string): string {
   return isInDetails() ? str : '';
 }
+
+//
