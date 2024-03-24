@@ -92,9 +92,9 @@
     ]
   },
   "dependencies": {
-    "@ysk8hori/typescript-graph": "0.12.1",
+    "@ysk8hori/typescript-graph": "0.12.3",
     "remeda": "^1.12.0",
-    "zod": "3.22.2"
+    "zod": "3.22.4"
   },
   "release": {
     "branches": [
