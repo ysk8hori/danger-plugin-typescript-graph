@@ -42,7 +42,7 @@
     "node": ">=16.0.0"
   },
   "devDependencies": {
-    "@total-typescript/ts-reset": "^0.5.0",
+    "@total-typescript/ts-reset": "^0.6.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -92,9 +92,9 @@
     ]
   },
   "dependencies": {
-    "@ysk8hori/typescript-graph": "0.12.1",
+    "@ysk8hori/typescript-graph": "0.14.1",
     "remeda": "^1.12.0",
-    "zod": "3.22.2"
+    "zod": "3.23.8"
   },
   "release": {
     "branches": [
